@@ -1,6 +1,7 @@
 from matplotlib import pyplot as p
 from muro import Muro
 from vacio import Vacio
+from collections import OrderedDict
 import math
 import shapefile
 
@@ -48,73 +49,72 @@ class Manzana:
                            self.getlongpp(item, self[i + 1])):
                         if file == "../shapefiles/void":
                             self.vacios.append(Vacio(self.id,
-                                                         shapes[j].points[:][0],
-                                                         shapes[j + 1].points[:][0],
-                                                         shapes[j + 2].points[:][0]))
+                                                     shapes[j].points[:][0],
+                                                     shapes[j + 1].points[:][0],
+                                                     shapes[j + 2].points[:][0]))
 
                         elif file == "../shapefiles/wall":
                             self.muros.append(Muro(self.id,
-                                                       shapes[j].points[:][0],
-                                                       shapes[j + 1].points[:][0],
-                                                       shapes[j + 2].points[:][0]))
+                                                    shapes[j].points[:][0],
+                                                    shapes[j + 1].points[:][0],
+                                                    shapes[j + 2].points[:][0]))
                 except IndexError:
                     continue
 
     def rellenar(self):
         # Declarar evento inicial
-        relleno = [0, self.getlong()]
+        relleno = [0]
 
         # Añadir esquinas
-        esq = {}
         for i in range(self.getnumesq()):
-            esq["esq{0}".format(i)] = self.getlongpp(self.esquinas[i], self.esquinas[i+1])
-            relleno.insert(i, esq["esq{0}".format(i)])
-        print(esq)
-        print(relleno)
+            ult = relleno[-1]
+            esquina = self.getlongpp(self.esquinas[i], self.esquinas[i+1]) + ult
+            relleno.append(esquina)
 
         # Añadir muros/vacios
         self.setexcepcion("../shapefiles/void")
         self.setexcepcion("../shapefiles/wall")
 
         if self.vacios:
-            ini = self.getlongpp(self.esquinas[0], self.vacios[0][0].inicio)
-            fin = self.getlongpp(self.esquinas[0], self.vacios[0][0].dentro) + \
-                  self.getlongpp(self.vacios[0][0].dentro, self.vacios[0][0].final)
-            info = [self.vacios[0][0].manzana,
-                    self.vacios[0][0].inicio,
-                    self.vacios[0][0].dentro,
-                    self.vacios[0][0].final,
-                    self.vacios[0][0].longitud]
+            ini = self.getlongpp(self.esquinas[0], self.vacios[0].inicio)
+            fin = self.getlongpp(self.esquinas[0], self.vacios[0].dentro) + \
+                  self.getlongpp(self.vacios[0].dentro, self.vacios[0].final)
+            info = [self.vacios[0].manzana,
+                    self.vacios[0].inicio,
+                    self.vacios[0].dentro,
+                    self.vacios[0].final,
+                    self.vacios[0].longitud]
             evvacio = ["vacio", ini, fin, info]
-            relleno.insert(1, evvacio)
+            relleno.insert(0, evvacio)
 
         if self.muros:
-            ini = self.getlongpp(self.esquinas[0], self.vacios[0][0].inicio)
-            fin = self.getlongpp(self.esquinas[0], self.vacios[0][0].dentro) + \
-                  self.getlongpp(self.vacios[0][0].dentro, self.vacios[0][0].final)
-            info = [self.muros[0][0].manzana,
-                    self.muros[0][0].inicio,
-                    self.muros[0][0].dentro,
-                    self.muros[0][0].final,
-                    self.muros[0][0].longitud]
+            ini = self.getlongpp(self.esquinas[0], self.muros[0].inicio)
+            fin = self.getlongpp(self.esquinas[0], self.muros[0].dentro) + \
+                  self.getlongpp(self.muros[0][0].dentro, self.muros[0].final)
+            info = [self.muros[0].manzana,
+                    self.muros[0].inicio,
+                    self.muros[0].dentro,
+                    self.muros[0].final,
+                    self.muros[0].longitud]
             evmuro = ["muro", ini, fin, info]
-            relleno.insert(1, evmuro)
+            # relleno.insert(1, evmuro)
+        print(relleno)
 
         # Añadir casas
 
     def mostrarvacios(self):
         for i in self.vacios:
             print("Vacios en Manzana " + str(self.id))
-            print("Inicio " + str(i[0].inicio))
-            print("Dentro " + str(i[0].dentro))
-            print("Fin " + str(i[0].fin))
+            print("Inicio " + str(i.inicio))
+            print("Dentro " + str(i.dentro))
+            print("Fin " + str(i.final))
 
     def mostrarmuros(self):
         for i in self.muros:
             print("Muros en Manzana " + str(self.id))
-            print("Inicio " + str(i[0].inicio))
-            print("Dentro " + str(i[0].dentro))
-            print("Fin " + str(i[0].fin))
+            print("Inicio " + str(i.inicio))
+            print("Dentro " + str(i.dentro))
+            print("Fin " + str(i.final))
 
     def mostrar(self):
         x = [x[0] for x in self.esquinas]
