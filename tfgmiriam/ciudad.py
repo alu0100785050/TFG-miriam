@@ -18,13 +18,13 @@ class Ciudad:
     def __getitem__(self, n_man):
         return self.manzanas[n_man]
 
-    def getnumm(self):
+    def getNumManzanas(self):
         n = 0
         for i in self.manzanas:
             n = n + 1
         return n
 
-    def mostrar(self):
+    def mostrarCiudad(self):
         for xy in self.manzanas:
             x = [i[0] for i in xy]
             y = [i[1] for i in xy]
