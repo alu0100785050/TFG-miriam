@@ -1,7 +1,16 @@
 from ciudad import Ciudad
-from casa import Casa
+import shapefile
+
 
 # Creación ciudad
 laguna = Ciudad("../shapefiles/manzana")
 
-laguna[6].rellenarManzana()
+# for i in laguna:
+#     i.setEstructura("../shapefiles/wall")
+#     i.setEstructura("../shapefiles/void")
+#     i.rellenarManzana()
+#     i.mostrarVacios()
+#     i.mostrarMuros()
+
+laguna[29].rellenarManzana()
+
