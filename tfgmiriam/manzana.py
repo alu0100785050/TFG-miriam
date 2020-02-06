@@ -2,6 +2,7 @@ from matplotlib import pyplot as p
 from muro import Muro
 from vacio import Vacio
 from math import modf
+import geopy.distance
 import math
 import shapefile
 
@@ -50,17 +51,15 @@ class Manzana:
                            == int(self.getLongPP(item, self[i + 1])):
                         if file == "../shapefiles/void":
                             self.vacios.append(Vacio(self.id,
-                                                     shapes[j].points[:][0],
-                                                     shapes[j + 1].points[:][0],
-                                                     shapes[j + 2].points[:][0],
-                                                     i))
+                                                     [shapes[j].points[:][0],
+                                                      shapes[j + 1].points[:][0],
+                                                      shapes[j + 2].points[:][0]]))
 
                         elif file == "../shapefiles/wall":
                             self.muros.append(Muro(self.id,
-                                                   shapes[j].points[:][0],
-                                                   shapes[j + 1].points[:][0],
-                                                   shapes[j + 2].points[:][0],
-                                                   i))
+                                                   [shapes[j].points[:][0],
+                                                    shapes[j + 1].points[:][0],
+                                                    shapes[j + 2].points[:][0]]))
                 except IndexError:
                     continue
 
@@ -71,41 +70,26 @@ class Manzana:
             esquina = self.getLongPP(self.esquinas[i], self.esquinas[i + 1]) + ult
             self.relleno.append(esquina)
 
-    def insertar(self, seg, evento):
-        # i = 0
-        # insertado = False
-        # while not insertado:
-            # if ini < self.relleno[i] < fin:
-        #self.relleno.pop(seg)
-        self.relleno.insert(seg, evento)
-            # insertado = True
-            # elif self.relleno[i] > ini < self.relleno[i + 1] and self.relleno[i] > fin < self.relleno[i + 1]:
-             #   self.relleno.insert(i, evento)
-             #  insertado = True
-            # i = i + 1
-
     def insertarEstructura(self):
         # Añadir muros/vacios
         self.setEstructura("../shapefiles/void")
         self.setEstructura("../shapefiles/wall")
         if self.vacios:
-            segmento = self.vacios[0].segmento
-            ini = self.getLongPP(self.esquinas[segmento], self.vacios[0].final) + self.relleno[segmento]
-            fin = ini + self.getLongPP(self.vacios[0].dentro, self.vacios[0].inicio)
+            ini = self.getLongPP(self.vacios[0].final, self.esquinas[0])
+            fin = ini + self.vacios[0].longitud
             info = [self.vacios[0]]
 
-            eventovacio = ["vacio", ini, fin, info]
-            self.insertar(segmento, eventovacio)
+            # eventovacio = ["vacio", ini, fin, info]
+            # self.relleno.insert(segmento, eventovacio)
 
         if self.muros:
-            segmento = self.muros[0].segmento
-            ini = self.getLongPP(self.esquinas[0], self.muros[0].final)
-            fin = self.getLongPP(self.esquinas[0], self.muros[0].dentro) \
-                  + self.getLongPP(self.muros[0].dentro, self.muros[0].inicio)
+            ini = self.getLongPP(self.muros[0].final, self.esquinas[0])
+            fin = ini + self.muros[0].longitud
             info = [self.muros[0]]
-            eventomuro = ["muro", ini, fin, info]
-            self.insertar(segmento, eventomuro)
-        print(self.relleno)
+
+            # eventomuro = ["vacio", ini, fin, info]
+            # self.relleno.insert(segmento, eventomuro)
+        #print(self.relleno)
 
     def rellenarManzana(self):
         self.insertarEsquinas()
