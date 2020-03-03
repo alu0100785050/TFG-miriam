@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3371aa21-7dcd-461b-a857-c940eaee10cd" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1XTRh2bB4ec8KqYTPql9AxF00yl" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="tfgMiriam" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3371aa21-7dcd-461b-a857-c940eaee10cd" name="Default Changelist" comment="" />
+      <created>1581068213368</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1581068213368</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Paso 0 terminado, mirar TODO">
+      <created>1581534141517</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1581534141517</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Rellenar con fachadas">
+      <created>1581967982071</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1581967982071</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Limpiando código">
+      <created>1582644350246</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1582644350246</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fachada tamaño de Muros/vacios">
+      <created>1583262115256</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1583262115256</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Paso 0 terminado, mirar TODO" />
+    <MESSAGE value="Rellenar con fachadas" />
+    <MESSAGE value="Limpiando código" />
+    <MESSAGE value="Fachada tamaño de Muros/vacios" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fachada tamaño de Muros/vacios" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="331" y="44" width="800" height="677" key="#Inspections" timestamp="1581266446845">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state x="278" y="44" width="800" height="677" key="#Inspections/1366.0.1366.768/0.27.1366.741@0.27.1366.741" timestamp="1581068511568" />
+    <state x="331" y="44" key="#Inspections/67.27.1299.741@67.27.1299.741" timestamp="1581266446845" />
+    <state x="141" y="41" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1581068545674">
+      <screen x="0" y="27" width="1366" height="741" />
+    </state>
+    <state x="141" y="41" key="#com.intellij.execution.impl.EditConfigurationsDialog/1366.0.1366.768/0.27.1366.741@0.27.1366.741" timestamp="1581068545674" />
+    <state x="320" y="27" width="782" height="741" key="CommitChangelistDialog2" timestamp="1583262112906">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state x="320" y="27" width="782" height="741" key="CommitChangelistDialog2/67.27.1299.741@67.27.1299.741" timestamp="1583262112906" />
+    <state width="1276" height="199" key="GridCell.Tab.0.bottom" timestamp="1583262137729">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state width="1343" height="190" key="GridCell.Tab.0.bottom/0.27.2732.741@0.27.2732.741" timestamp="1581612520543" />
+    <state width="1343" height="184" key="GridCell.Tab.0.bottom/1366.0.1366.768/0.27.1366.741@0.27.1366.741" timestamp="1581077124572" />
+    <state width="1276" height="199" key="GridCell.Tab.0.bottom/67.27.1299.741@67.27.1299.741" timestamp="1583262137729" />
+    <state width="1276" height="199" key="GridCell.Tab.0.center" timestamp="1583262137728">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state width="1343" height="190" key="GridCell.Tab.0.center/0.27.2732.741@0.27.2732.741" timestamp="1581612520542" />
+    <state width="1343" height="184" key="GridCell.Tab.0.center/1366.0.1366.768/0.27.1366.741@0.27.1366.741" timestamp="1581077124572" />
+    <state width="1276" height="199" key="GridCell.Tab.0.center/67.27.1299.741@67.27.1299.741" timestamp="1583262137728" />
+    <state width="1276" height="199" key="GridCell.Tab.0.left" timestamp="1583262137728">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state width="1343" height="190" key="GridCell.Tab.0.left/0.27.2732.741@0.27.2732.741" timestamp="1581612520541" />
+    <state width="1343" height="184" key="GridCell.Tab.0.left/1366.0.1366.768/0.27.1366.741@0.27.1366.741" timestamp="1581077124572" />
+    <state width="1276" height="199" key="GridCell.Tab.0.left/67.27.1299.741@67.27.1299.741" timestamp="1583262137728" />
+    <state width="1276" height="199" key="GridCell.Tab.0.right" timestamp="1583262137728">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state width="1343" height="190" key="GridCell.Tab.0.right/0.27.2732.741@0.27.2732.741" timestamp="1581612520542" />
+    <state width="1343" height="184" key="GridCell.Tab.0.right/1366.0.1366.768/0.27.1366.741@0.27.1366.741" timestamp="1581077124572" />
+    <state width="1276" height="199" key="GridCell.Tab.0.right/67.27.1299.741@67.27.1299.741" timestamp="1583262137728" />
+    <state width="1276" height="271" key="GridCell.Tab.1.bottom" timestamp="1582805692837">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state width="1276" height="271" key="GridCell.Tab.1.bottom/67.27.1299.741@67.27.1299.741" timestamp="1582805692837" />
+    <state width="1276" height="271" key="GridCell.Tab.1.center" timestamp="1582805692837">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state width="1276" height="271" key="GridCell.Tab.1.center/67.27.1299.741@67.27.1299.741" timestamp="1582805692837" />
+    <state width="1276" height="271" key="GridCell.Tab.1.left" timestamp="1582805692836">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state width="1276" height="271" key="GridCell.Tab.1.left/67.27.1299.741@67.27.1299.741" timestamp="1582805692836" />
+    <state width="1276" height="271" key="GridCell.Tab.1.right" timestamp="1582805692837">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state width="1276" height="271" key="GridCell.Tab.1.right/67.27.1299.741@67.27.1299.741" timestamp="1582805692837" />
+    <state x="172" y="18" key="SettingsEditor" timestamp="1581069055106">
+      <screen x="0" y="27" width="1366" height="741" />
+    </state>
+    <state x="172" y="18" key="SettingsEditor/1366.0.1366.768/0.27.1366.741@0.27.1366.741" timestamp="1581069055106" />
+    <state x="311" y="132" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1583262127673">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state x="311" y="132" width="800" height="528" key="Vcs.Push.Dialog.v2/67.27.1299.741@67.27.1299.741" timestamp="1583262127672" />
+    <state x="461" y="40" width="501" height="713" key="refactoring.ChangeSignatureDialog" timestamp="1582555753447">
+      <screen x="67" y="27" width="1299" height="741" />
+    </state>
+    <state x="461" y="40" width="501" height="713" key="refactoring.ChangeSignatureDialog/67.27.1299.741@67.27.1299.741" timestamp="1582555753447" />
+  </component>
+</project>
