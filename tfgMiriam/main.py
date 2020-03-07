@@ -7,8 +7,8 @@ from matplotlib import pyplot as p
 shpma = shapefile.Reader("../shapefiles/manzana")
 shpva = shapefile.Reader("../shapefiles/void")
 shpmu = shapefile.Reader("../shapefiles/wall")
-manzanas, muros, vacios, fachadas = ([] for i in range(4))
-nmanzanas, nmuros, nvacios, nfachadas = (0, 0, 0, 0)
+manzanas, muros, vacios, fachadas, casas = ([] for i in range(5))
+nmanzanas, nmuros, nvacios = (0, 0, 0)
 lmin = 45.0207 - 2 * 10.2515
 lmax = 45.0207 + 2 * 10.2515
 
@@ -133,14 +133,13 @@ def initEstructuras(shpestr):
 
 # Paso 1 del algoritmo - hace que inicio y final del muro sean un vértice
 def preparaEstructura(VManzanas, nmanzanas, VEstructuras, mzn):
-    tolerancia = 2
+    tolerancia = 5
     count, nvect = (0, 0)
     vectoresx, vectoresy, distpq, tipovert, vertfach = ([] for i in range(5))
     acumdist = [0]
 
     for estructura in VEstructuras:
         if estructura['mzn'] == mzn['id']:
-            # Guardar información
             tmpX = VManzanas[mzn['id']]['x'][1:]
             tmpY = VManzanas[mzn['id']]['y'][1:]
             tipo = VManzanas[mzn['id']]['tipo']
@@ -154,9 +153,9 @@ def preparaEstructura(VManzanas, nmanzanas, VEstructuras, mzn):
 
             if distinit < tolerancia:
                 if VEstructuras == VMuros:
-                    tipo.insert(sinit, 'CM')
+                    tipo[sinit] = 'CM'
                 elif VEstructuras == VVacios:
-                    tipo.insert(sinit, 'CV')
+                    tipo[sinit] = 'CV'
             else:
                 ux = VManzanas[mzn['id']]['dX'][sinit]
                 uy = VManzanas[mzn['id']]['dY'][sinit]
@@ -169,23 +168,23 @@ def preparaEstructura(VManzanas, nmanzanas, VEstructuras, mzn):
                 tmpX.insert(sinit, nuevox)
                 tmpY.insert(sinit, nuevoy)
 
-                if VEstructuras == VMuros:
-                    tipo.insert(sinit+1, 'CM')
-                elif VEstructuras == VVacios:
-                    tipo.insert(sinit+1, 'CV')
-
                 insertinit = insertinit + 1
+
+                if VEstructuras == VMuros:
+                    tipo.insert(insertinit, 'CM')
+                elif VEstructuras == VVacios:
+                    tipo.insert(insertinit, 'CV')
 
             distend = lend - VManzanas[mzn['id']]['acumdist'][send]
             insertend = send + (insertinit - sinit)
 
             if distend < tolerancia:
                 if VEstructuras == VMuros:
-                    if tipo[insertend] in ('FV', 'CC'):
-                        tipo.insert(send, 'FM')
+                    if tipo[send] in ('FV', 'CC'):
+                        tipo[send] = 'FM'
                 elif VEstructuras == VVacios:
-                    if tipo[insertend] in ('FM', 'CC'):
-                        tipo.insert(send, 'FV')
+                    if tipo[send] in ('FM', 'CC'):
+                        tipo[send] = 'FV'
             else:
                 ux = VManzanas[mzn['id']]['dX'][send]
                 uy = VManzanas[mzn['id']]['dY'][send]
@@ -198,25 +197,28 @@ def preparaEstructura(VManzanas, nmanzanas, VEstructuras, mzn):
                 tmpX.insert(send+1, nuevox)
                 tmpY.insert(send+1, nuevoy)
 
+                insertend = insertend + 1
+
                 if VEstructuras == VMuros:
-                    if tipo[insertend] == 'CM':
-                        tipo.insert(insertend+1, 'FM')
+                    if tipo[send] == 'CM':
+                        tipo.insert(send+1, 'FM')
                     else:
                         tipo.insert(insertend, 'FM')
                 elif VEstructuras == VVacios:
-                    if tipo[insertend] == 'CV':
-                        tipo.insert(insertend+1, 'FV')
+                    if tipo[send] == 'CV':
+                        tipo.insert(send+1, 'FV')
                     else:
                         tipo.insert(insertend, 'FV')
 
-                insertend = insertend + 1
-
             tmpX.insert(0, tmpX[-1])
             tmpY.insert(0, tmpY[-1])
+
+            # TONTA AÑADIR AQUI NUEVOS X'S E Y'S POR CADA CM Y CV AÑADIDO TONTA
             if VEstructuras == VMuros:
-                tipo[insertinit:insertend-1] = ['CM'] * ((insertend-1) - insertinit)
+                tipo[insertinit+1:insertend] = ['CM'] * ((insertend-1) - insertinit)
             elif VEstructuras == VVacios:
-                tipo[insertinit:insertend-1] = ['CV'] * ((insertend-1) - insertinit)
+                tipo[insertinit+1:insertend-1] = ['CV'] * ((insertend-1) - insertinit)
+            # TONTA AÑADIR AQUI NUEVOS X'S E Y'S POR CADA CM Y CV AÑADIDO TONTA
 
             # Recalcular campos en manzanas
             VManzanas[mzn['id']]['x'] = tmpX
@@ -305,23 +307,69 @@ def rellenaFachadas(VManzanas, nmanzanas, mzn):
             longitud = 0
             seg = segmento
 
-            while VManzanas[mzn['id']]['tipo'][segmento] in ('CV', 'CM'):
-                cdp = VManzanas[mzn['id']]['acumdist'][segmento]
-                longitud = VManzanas[mzn['id']]['dist'][segmento] + longitud
+            # if VManzanas[mzn['id']]['tipo'][segmento] == 'CM':
+            #     for muro in VMuros:
+            #         if muro['mzn'] == mzn['id']:
+            #             print("yes")
+            #             longitud = muro['cumdend'] - muro['cumdinit']
+            #             nfachadas = nfachadas + 1
+            #
+            #             xx = VManzanas[mzn['id']]['x'][segmento]
+            #             yy = VManzanas[mzn['id']]['y'][segmento]
+            #             tipo = VManzanas[mzn['id']]['tipo'][segmento]
+            #             dp = dp + longitud
+            #             cdp = cdp + longitud
+            #
+            #             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
+            #             fachadas.insert(nfachadas, fachada)
+            # while VManzanas[mzn['id']]['tipo'][segmento] == 'CM':
+            #     segmento = segmento + 1
+            #
+            # if VManzanas[mzn['id']]['tipo'][segmento] == 'CV':
+            #     for vacio in VVacios:
+            #         if vacio['mzn'] == mzn['id']:
+            #             longitud = vacio['cumdend'] - vacio['cumdinit']
+            #             nfachadas = nfachadas + 1
+            #
+            #             xx = VManzanas[mzn['id']]['x'][segmento]
+            #             yy = VManzanas[mzn['id']]['y'][segmento]
+            #             tipo = VManzanas[mzn['id']]['tipo'][segmento]
+            #             dp = dp + longitud
+            #             cdp = cdp + longitud
+            #
+            #             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
+            #             fachadas.insert(nfachadas, fachada)
+            #
+            # while VManzanas[mzn['id']]['tipo'][segmento] == 'CV':
+            #     segmento = segmento + 1
 
-                nfachadas = nfachadas + 1
-                xx = VManzanas[mzn['id']]['x'][segmento]
-                yy = VManzanas[mzn['id']]['y'][segmento]
-                tipo = VManzanas[mzn['id']]['tipo'][segmento]
+            cdp = VManzanas[mzn['id']]['acumdist'][segmento]
+            longitud = VManzanas[mzn['id']]['dist'][segmento]
 
-                dp = dp + longitud
-                cdp = cdp + longitud
-                segmento = segmento + 1
+            nfachadas = nfachadas + 1
+            xx = VManzanas[mzn['id']]['x'][segmento]
+            yy = VManzanas[mzn['id']]['y'][segmento]
+            tipo = VManzanas[mzn['id']]['tipo'][segmento]
+
+            dp = dp + longitud
+            cdp = cdp + longitud
+            segmento = segmento + 1
 
             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
             fachadas.insert(nfachadas, fachada)
 
     VManzanas[mzn['id']]['verticefachada'] = segmentos
+
+
+def arreglarEsquinas():
+    pass
+
+
+# Paso 3 del algoritmo - generar casas a partir de las fachadas
+def generarCasas(fachadas, mzn):
+    for fachada in fachadas:
+        if fachada['tipo'] in ('FM', 'FV', 'CC'):
+            pass
 
 
 # EJECUCIÓN
@@ -340,16 +388,23 @@ for manzana in VManzanas:
     preparaEstructura(VManzanas, nmanzanas, VVacios, manzana)
 
 # Paso 2 - Rellenar con fachadas
-rellenaFachadas(VManzanas, nmanzanas, VManzanas[23])
+rellenaFachadas(VManzanas, nmanzanas, VManzanas[30])
 
+longtotal = 0
 x,y = ([] for i in range(2))
 for fachada in fachadas:
     print(fachada)
+    longtotal = fachada['long'] + longtotal
     x.append(fachada['x'])
     y.append(fachada['y'])
     p.plot(x, y)
 p.show()
 
+print(longtotal)
+print(VManzanas[30]['tipo'])
+print(VManzanas[30]['acumdist'])
+
 print(VMuros)
 print(VVacios)
-mostrarManzana(VManzanas[23])
+
+# Paso 3 - Generar las casas a partir de las fachadas
