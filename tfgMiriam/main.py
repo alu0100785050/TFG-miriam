@@ -11,6 +11,15 @@ manzanas, muros, vacios, fachadas, casas = ([] for i in range(5))
 nmanzanas, nmuros, nvacios = (0, 0, 0)
 lmin = 45.0207 - 2 * 10.2515
 lmax = 45.0207 + 2 * 10.2515
+pmin = 18.1218 - 2 * 3.1631
+pmax = 18.1218 + 2 * 3.1631
+amin = 28.3898 - 2 * 4.9329
+amax = 28.3898 + 2 * 4.9329
+
+print("Profundidad")
+print(pmin,pmax)
+print("LOngitud")
+print(lmin,lmax)
 
 
 # Funciones auxiliares
@@ -26,9 +35,14 @@ def mostrarManzana(manzana):
     p.show()
 
 
-def ajustar(lfac):
+def ajustarLongitud(lfac):
     if lfac > lmax or lfac < lmin:
-        lfac = lmin
+        lfac = lmax
+
+
+def ajustarProfundidad(pcasa):
+    if pcasa > pmax or pcasa < pmin:
+        pcasa = pmin
 
 
 # Paso 0 del algoritmo
@@ -245,11 +259,10 @@ def preparaEstructura(VManzanas, nmanzanas, VEstructuras, mzn):
 def rellenaFachadas(VManzanas, nmanzanas, mzn):
     nsegmentos = VManzanas[mzn['id']]['nvectores']
     nfachadas, x, y, segmento= (0, 0, 0, 0)
-    segmentos, longitud, tipo = ([] for i in range(3))
+    longitud, tipo = ([] for i in range(2))
 
     while segmento < nsegmentos:
         nfachadas = nfachadas + 1
-        segmentos.append(nfachadas)
 
         if VManzanas[mzn['id']]['tipo'][segmento] in ('FM', 'FV', 'CC'):
             dp = 0  # Distancia recorrida en segmento
@@ -276,7 +289,7 @@ def rellenaFachadas(VManzanas, nmanzanas, mzn):
                 while dp < di:  # Mientras quede distancia para completar en la distancia recorrida
 
                     lfac = np.random.normal(45.0207, 10.2515)  # Calcular longitud
-                    ajustar(lfac)
+                    ajustarLongitud(lfac)
                     dist1 = di - dp - lmin
 
                     if lfac > dist1:  # Si la longitud es mayor que la distancia que queda para rellenar
@@ -358,19 +371,20 @@ def rellenaFachadas(VManzanas, nmanzanas, mzn):
             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
             fachadas.insert(nfachadas, fachada)
 
-    VManzanas[mzn['id']]['verticefachada'] = segmentos
-
-
-def arreglarEsquinas():
-    pass
-
 
 # Paso 3 del algoritmo - generar casas a partir de las fachadas
-def generarCasas(fachadas, mzn):
-    for fachada in fachadas:
-        if fachada['tipo'] in ('FM', 'FV', 'CC'):
-            pass
-
+def generarCasas(fachadas):
+    for index, fachada in enumerate(fachadas):
+        if fachada['tipo'] in 'CC' and fachadas[index - 1]['seg'] != fachadas[index]['seg']:
+            pcasa = np.random.normal(18.1218, 3.1631)
+            ajustarProfundidad(pcasa)
+            if (fachadas[index+1]['long'] - pcasa) < lmin:
+                pcasa = pmin
+                fachadas[index+1]['long'] = fachadas[index+1]['long'] - pcasa
+                print(fachadas[index+1]['long'])
+            else:
+                fachadas[index+1]['long'] = fachadas[index+1]['long'] - pcasa
+                print(fachadas[index+1]['long'])
 
 # EJECUCIÓN
 # Paso 0 - Inicializar manzanas, muros y vacios
@@ -388,23 +402,15 @@ for manzana in VManzanas:
     preparaEstructura(VManzanas, nmanzanas, VVacios, manzana)
 
 # Paso 2 - Rellenar con fachadas
-rellenaFachadas(VManzanas, nmanzanas, VManzanas[30])
+rellenaFachadas(VManzanas, nmanzanas, VManzanas[0])
 
-longtotal = 0
-x,y = ([] for i in range(2))
-for fachada in fachadas:
-    print(fachada)
-    longtotal = fachada['long'] + longtotal
-    x.append(fachada['x'])
-    y.append(fachada['y'])
-    p.plot(x, y)
-p.show()
-
-print(longtotal)
-print(VManzanas[30]['tipo'])
-print(VManzanas[30]['acumdist'])
-
-print(VMuros)
-print(VVacios)
+# x,y = ([] for i in range(2))
+# for fachada in fachadas:
+#     print(fachada)
+    # x.append(fachada['x'])
+    # y.append(fachada['y'])
+#     p.plot(x, y)
+# p.show()
 
 # Paso 3 - Generar las casas a partir de las fachadas
+generarCasas(fachadas)
