@@ -16,13 +16,6 @@ pmax = 18.1218 + 2 * 3.1631
 amin = 28.3898 - 2 * 4.9329
 amax = 28.3898 + 2 * 4.9329
 
-print("Longitud")
-print(lmin, lmax)
-print("Profundidad")
-print(pmin, pmax)
-print("Altura")
-print(amin, amax)
-
 
 # Funciones auxiliares
 def calculateVector(p, q, coord):
@@ -50,6 +43,15 @@ def ajustarProfundidad(pcasa):
 def ajustarAltura(acasa):
     if acasa > amax or acasa < amin:
         acasa = amin
+
+
+def longitudEsquina():
+    lfachada = np.random.normal(45.0207, 10.2515)
+    ajustarLongitud(lfachada)
+    if lfachada - pmax >= lmin:
+        return lfachada
+    else:
+        return longitudEsquina()
 
 
 # Paso 0 del algoritmo
@@ -272,7 +274,7 @@ def rellenaFachadas(VManzanas, nmanzanas, mzn):
     nfachadas, x, y, segmento = (0, 0, 0, 0)
     longitud, tipo = ([] for i in range(2))
 
-    while segmento < nsegmentos:
+    for segmento in range(nsegmentos):
         nfachadas = nfachadas + 1
 
         if VManzanas[mzn['id']]['tipo'][segmento] in ('FM', 'FV', 'CC'):
@@ -294,78 +296,56 @@ def rellenaFachadas(VManzanas, nmanzanas, mzn):
 
                 fachada = {"x": xx, "y": yy, "long": di, "seg": segmento, "mzn": mzn['id'], "tipo": tipo}
                 fachadas.insert(nfachadas, fachada)
-                segmento = segmento + 1
 
             else:
                 while dp < di:  # Mientras quede distancia para completar en la distancia recorrida
+                    if cdp == VManzanas[mzn['id']]['acumdist'][segmento]:
+                        ll = longitudEsquina()
 
-                    lfac = np.random.normal(45.0207, 10.2515)  # Calcular longitud
-                    ajustarLongitud(lfac)
-                    dist1 = di - dp - lmin
+                        nfachadas = nfachadas + 1
+                        xvector = VManzanas[mzn['id']]['dX'][segmento]
+                        yvector = VManzanas[mzn['id']]['dY'][segmento]
+                        vx = np.divide(xvector, VManzanas[mzn['id']]['dist'][segmento]) * dp
+                        vy = np.divide(yvector, VManzanas[mzn['id']]['dist'][segmento]) * dp
+                        xx = VManzanas[mzn['id']]['x'][segmento] + vx
+                        yy = VManzanas[mzn['id']]['y'][segmento] + vy
+                        tipo = VManzanas[mzn['id']]['tipo'][segmento]
 
-                    if lfac > dist1:  # Si la longitud es mayor que la distancia que queda para rellenar
-                        lfac = dist1  # Asignamos esa distancia a la longitud, ya que no se puede rellenar más
-                        dist2 = di - dp
+                        cdp = cdp + ll
+                        dp = dp + ll
 
-                        if lmin <= dist2 <= lmax:  # Si la distancia que queda para rellenar está entre los límites
-                            lfac = dist2
+                        fachada = {"x": xx, "y": yy, "long": ll, "seg": segmento, "mzn": mzn['id'], "tipo": tipo}
+                        fachadas.insert(nfachadas, fachada)
+                    else:
+                        lfac = np.random.normal(45.0207, 10.2515)  # Calcular longitud
+                        ajustarLongitud(lfac)
+                        dist1 = di - dp - lmin
 
-                    nfachadas = nfachadas + 1
-                    xvector = VManzanas[mzn['id']]['dX'][segmento]
-                    yvector = VManzanas[mzn['id']]['dY'][segmento]
-                    vx = np.divide(xvector, VManzanas[mzn['id']]['dist'][segmento]) * dp
-                    vy = np.divide(yvector, VManzanas[mzn['id']]['dist'][segmento]) * dp
-                    xx = VManzanas[mzn['id']]['x'][segmento] + vx
-                    yy = VManzanas[mzn['id']]['y'][segmento] + vy
-                    tipo = VManzanas[mzn['id']]['tipo'][segmento]
+                        if lfac > dist1:  # Si la longitud es mayor que la distancia que queda para rellenar
+                            lfac = dist1  # Asignamos esa distancia a la longitud, ya que no se puede rellenar más
+                            dist2 = di - dp
 
-                    cdp = cdp + lfac
-                    dp = dp + lfac
+                            if lmin <= dist2 <= lmax:  # Si la distancia que queda para rellenar está entre los límites
+                                lfac = dist2
 
-                    fachada = {"x": xx, "y": yy, "long": lfac, "seg": segmento, "mzn": mzn['id'], "tipo": tipo}
-                    fachadas.insert(nfachadas, fachada)
+                        nfachadas = nfachadas + 1
+                        xvector = VManzanas[mzn['id']]['dX'][segmento]
+                        yvector = VManzanas[mzn['id']]['dY'][segmento]
+                        vx = np.divide(xvector, VManzanas[mzn['id']]['dist'][segmento]) * dp
+                        vy = np.divide(yvector, VManzanas[mzn['id']]['dist'][segmento]) * dp
+                        xx = VManzanas[mzn['id']]['x'][segmento] + vx
+                        yy = VManzanas[mzn['id']]['y'][segmento] + vy
+                        tipo = VManzanas[mzn['id']]['tipo'][segmento]
 
-                segmento = segmento + 1
+                        cdp = cdp + lfac
+                        dp = dp + lfac
+
+                        fachada = {"x": xx, "y": yy, "long": lfac, "seg": segmento, "mzn": mzn['id'], "tipo": tipo}
+                        fachadas.insert(nfachadas, fachada)
 
         else:  # Si hay un CM, CV, se guarda una fachada con el tamaño del muro o vacío
             longitud = 0
             seg = segmento
-
-            # if VManzanas[mzn['id']]['tipo'][segmento] == 'CM':
-            #     for muro in VMuros:
-            #         if muro['mzn'] == mzn['id']:
-            #             print("yes")
-            #             longitud = muro['cumdend'] - muro['cumdinit']
-            #             nfachadas = nfachadas + 1
-            #
-            #             xx = VManzanas[mzn['id']]['x'][segmento]
-            #             yy = VManzanas[mzn['id']]['y'][segmento]
-            #             tipo = VManzanas[mzn['id']]['tipo'][segmento]
-            #             dp = dp + longitud
-            #             cdp = cdp + longitud
-            #
-            #             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
-            #             fachadas.insert(nfachadas, fachada)
-            # while VManzanas[mzn['id']]['tipo'][segmento] == 'CM':
-            #     segmento = segmento + 1
-            #
-            # if VManzanas[mzn['id']]['tipo'][segmento] == 'CV':
-            #     for vacio in VVacios:
-            #         if vacio['mzn'] == mzn['id']:
-            #             longitud = vacio['cumdend'] - vacio['cumdinit']
-            #             nfachadas = nfachadas + 1
-            #
-            #             xx = VManzanas[mzn['id']]['x'][segmento]
-            #             yy = VManzanas[mzn['id']]['y'][segmento]
-            #             tipo = VManzanas[mzn['id']]['tipo'][segmento]
-            #             dp = dp + longitud
-            #             cdp = cdp + longitud
-            #
-            #             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
-            #             fachadas.insert(nfachadas, fachada)
-            #
-            # while VManzanas[mzn['id']]['tipo'][segmento] == 'CV':
-            #     segmento = segmento + 1
 
             cdp = VManzanas[mzn['id']]['acumdist'][segmento]
             longitud = VManzanas[mzn['id']]['dist'][segmento]
@@ -393,7 +373,8 @@ def generarCasas(fachadas, mzn):
             acasa2 = np.random.normal(28.3898, 4.9329)
             ajustarProfundidad(pcasa)
             ajustarProfundidad(pcasa2)
-            ajustarAltura(pcasa)
+            ajustarAltura(acasa)
+            ajustarAltura(acasa2)
 
             # TODO corregir coordenadas de las casas si es necesario, acabar casas de los centros
             # ¿Corregir solo cuando antes y después sean CC? ¿Si es FM O FV y viene CC también se considera esquina?
@@ -445,17 +426,21 @@ for manzana in VManzanas:
     preparaEstructura(VManzanas, nmanzanas, VVacios, manzana)
 
 # Paso 2 - Rellenar con fachadas
-rellenaFachadas(VManzanas, nmanzanas, VManzanas[2])
+rellenaFachadas(VManzanas, nmanzanas, VManzanas[0])
 
-# x,y = ([] for i in range(2))
-# for fachada in fachadas:
-#     print(fachada)
-# x.append(fachada['x'])
-# y.append(fachada['y'])
-#     p.plot(x, y)
-# p.show()
+longtotal= 0
+x,y = ([] for i in range(2))
+for fachada in fachadas:
+    longtotal = fachada['long'] + longtotal
+    print(fachada)
+    x.append(fachada['x'])
+    y.append(fachada['y'])
+    p.plot(x, y)
+p.show()
 
+print(longtotal)
+print(VManzanas[0])
 # Paso 3 - Generar las casas a partir de las fachadas
-generarCasas(fachadas, VManzanas[2])
-for casa in casas:
-    print(casa)
+# generarCasas(fachadas, VManzanas[2])
+# for casa in casas:
+#     print(casa)
