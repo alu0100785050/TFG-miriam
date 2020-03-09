@@ -16,10 +16,12 @@ pmax = 18.1218 + 2 * 3.1631
 amin = 28.3898 - 2 * 4.9329
 amax = 28.3898 + 2 * 4.9329
 
+print("Longitud")
+print(lmin, lmax)
 print("Profundidad")
-print(pmin,pmax)
-print("LOngitud")
-print(lmin,lmax)
+print(pmin, pmax)
+print("Altura")
+print(amin, amax)
 
 
 # Funciones auxiliares
@@ -43,6 +45,11 @@ def ajustarLongitud(lfac):
 def ajustarProfundidad(pcasa):
     if pcasa > pmax or pcasa < pmin:
         pcasa = pmin
+
+
+def ajustarAltura(acasa):
+    if acasa > amax or acasa < amin:
+        acasa = amin
 
 
 # Paso 0 del algoritmo
@@ -84,13 +91,16 @@ def initEstructuras(shpestr):
     distinit = 10000
 
     for man in manzanas:  # Recorrer manzanas
-        for index, (x, y) in enumerate(zip(man['x'][:-1], man['y'][:-1])):  # Recorrer coordenadas dentro de cada manzana
+        for index, (x, y) in enumerate(
+                zip(man['x'][:-1], man['y'][:-1])):  # Recorrer coordenadas dentro de cada manzana
             for index2, coord in enumerate(shpestr.shapeRecords()):  # Recorrer estructuras
                 for i in coord.shape.points[:]:  # Recorrer coorenadas dentro de cada estructura
 
                     dist = math.sqrt((x - i[0]) ** 2 + (y - i[1]) ** 2)  # Distancia de muro a vértice anterior
-                    dist2 = math.sqrt((i[0] - man['x'][index + 1]) ** 2 + (i[1] - man['y'][index + 1]) ** 2)  # Distancia de muro a vértice siguiente
-                    dist3 = math.sqrt((x - man['x'][index + 1]) ** 2 + (y - man['y'][index + 1]) ** 2)  # Distancia de vértice a vértice
+                    dist2 = math.sqrt((i[0] - man['x'][index + 1]) ** 2 + (
+                                i[1] - man['y'][index + 1]) ** 2)  # Distancia de muro a vértice siguiente
+                    dist3 = math.sqrt((x - man['x'][index + 1]) ** 2 + (
+                                y - man['y'][index + 1]) ** 2)  # Distancia de vértice a vértice
 
                     if dist + dist2 - dist3 < threshold:  # Si es menor entonces pertenece a esa manzana en ese segmento
                         r = shpestr.record(index2)
@@ -102,7 +112,8 @@ def initEstructuras(shpestr):
                         puntos = puntos + 1
 
                         if puntos == 3:  # Cuando se tenga los tres puntos de la estructura
-                            for index, (punto, segmento, tipo) in enumerate(zip(estructura, segmentos, tipos)):  # Se recorren para establecer el inicio y el fin
+                            for index, (punto, segmento, tipo) in enumerate(zip(estructura, segmentos,
+                                                                                tipos)):  # Se recorren para establecer el inicio y el fin
                                 # TODO si el inicio del muro/vacío está antes del origen de la manzana
                                 # if tip == 0:
                                 #     if seg[index + 1] == segmen:
@@ -208,19 +219,19 @@ def preparaEstructura(VManzanas, nmanzanas, VEstructuras, mzn):
                 nuevox = px + distend * (ux / normu)
                 nuevoy = py + distend * (uy / normu)
 
-                tmpX.insert(send+1, nuevox)
-                tmpY.insert(send+1, nuevoy)
+                tmpX.insert(send + 1, nuevox)
+                tmpY.insert(send + 1, nuevoy)
 
                 insertend = insertend + 1
 
                 if VEstructuras == VMuros:
                     if tipo[send] == 'CM':
-                        tipo.insert(send+1, 'FM')
+                        tipo.insert(send + 1, 'FM')
                     else:
                         tipo.insert(insertend, 'FM')
                 elif VEstructuras == VVacios:
                     if tipo[send] == 'CV':
-                        tipo.insert(send+1, 'FV')
+                        tipo.insert(send + 1, 'FV')
                     else:
                         tipo.insert(insertend, 'FV')
 
@@ -229,9 +240,9 @@ def preparaEstructura(VManzanas, nmanzanas, VEstructuras, mzn):
 
             # TONTA AÑADIR AQUI NUEVOS X'S E Y'S POR CADA CM Y CV AÑADIDO TONTA
             if VEstructuras == VMuros:
-                tipo[insertinit+1:insertend] = ['CM'] * ((insertend-1) - insertinit)
+                tipo[insertinit + 1:insertend] = ['CM'] * ((insertend - 1) - insertinit)
             elif VEstructuras == VVacios:
-                tipo[insertinit+1:insertend-1] = ['CV'] * ((insertend-1) - insertinit)
+                tipo[insertinit + 1:insertend - 1] = ['CV'] * ((insertend - 1) - insertinit)
             # TONTA AÑADIR AQUI NUEVOS X'S E Y'S POR CADA CM Y CV AÑADIDO TONTA
 
             # Recalcular campos en manzanas
@@ -258,7 +269,7 @@ def preparaEstructura(VManzanas, nmanzanas, VEstructuras, mzn):
 # Paso 2 del algoritmo - rellenar manzanas con fachadas
 def rellenaFachadas(VManzanas, nmanzanas, mzn):
     nsegmentos = VManzanas[mzn['id']]['nvectores']
-    nfachadas, x, y, segmento= (0, 0, 0, 0)
+    nfachadas, x, y, segmento = (0, 0, 0, 0)
     longitud, tipo = ([] for i in range(2))
 
     while segmento < nsegmentos:
@@ -373,18 +384,50 @@ def rellenaFachadas(VManzanas, nmanzanas, mzn):
 
 
 # Paso 3 del algoritmo - generar casas a partir de las fachadas
-def generarCasas(fachadas):
+def generarCasas(fachadas, mzn):
     for index, fachada in enumerate(fachadas):
         if fachada['tipo'] in 'CC' and fachadas[index - 1]['seg'] != fachadas[index]['seg']:
             pcasa = np.random.normal(18.1218, 3.1631)
+            pcasa2 = np.random.normal(18.1218, 3.1631)
+            acasa = np.random.normal(28.3898, 4.9329)
+            acasa2 = np.random.normal(28.3898, 4.9329)
             ajustarProfundidad(pcasa)
-            if (fachadas[index+1]['long'] - pcasa) < lmin:
+            ajustarProfundidad(pcasa2)
+            ajustarAltura(pcasa)
+
+            # TODO corregir coordenadas de las casas si es necesario, acabar casas de los centros
+            # ¿Corregir solo cuando antes y después sean CC? ¿Si es FM O FV y viene CC también se considera esquina?
+            # ¿Ir jugando con los parámetros hasta encontrar el balance entre ellos?
+            # ¿Corregir coordenadas en las casas si algún parámetro es modificado?
+            if (fachadas[index - 1]['long'] - pcasa) < lmin:
                 pcasa = pmin
-                fachadas[index+1]['long'] = fachadas[index+1]['long'] - pcasa
-                print(fachadas[index+1]['long'])
+                fachadas[index - 1]['long'] = fachadas[index - 1]['long'] - pcasa
+                if fachadas[index - 1]['long'] < lmin:
+                    fachadas[index - 1]['long'] = fachadas[index - 1]['long'] + fachadas[index - 2]['long']
+                    casa = {"fachada": index - 1, "long": fachadas[index - 1]['long'], "profundidad": pcasa,
+                            "altura": acasa, "mzn": mzn['id'], "seg": fachadas[index - 1]['seg']}
+                    casa2 = {"fachada": index, "long": fachadas[index]['long'], "profundidad": pcasa2, "altura": acasa2,
+                             "mzn": mzn['id'], "seg": fachadas[index]['seg']}
+                    casas.append(casa)
+                    casas.append(casa2)
+
+                else:
+                    casa = {"fachada": index - 1, "long": fachadas[index - 1]['long'], "profundidad": pcasa,
+                            "altura": acasa, "mzn": mzn['id'], "seg": fachadas[index - 1]['seg']}
+                    casa2 = {"fachada": index, "long": fachadas[index]['long'], "profundidad": pcasa2,
+                             "altura": acasa2, "mzn": mzn['id'], "seg": fachadas[index]['seg']}
+                    casas.append(casa)
+                    casas.append(casa2)
+
             else:
-                fachadas[index+1]['long'] = fachadas[index+1]['long'] - pcasa
-                print(fachadas[index+1]['long'])
+                fachadas[index - 1]['long'] = fachadas[index - 1]['long'] - pcasa
+                casa = {"fachada": index - 1, "long": fachadas[index - 1]['long'], "profundidad": pcasa,
+                        "altura": acasa, "mzn": mzn['id'], "seg": fachadas[index - 1]['seg']}
+                casa2 = {"fachada": index, "long": fachadas[index]['long'], "profundidad": pcasa2, "altura": acasa2,
+                         "mzn": mzn['id'], "seg": fachadas[index]['seg']}
+                casas.append(casa)
+                casas.append(casa2)
+
 
 # EJECUCIÓN
 # Paso 0 - Inicializar manzanas, muros y vacios
@@ -402,15 +445,17 @@ for manzana in VManzanas:
     preparaEstructura(VManzanas, nmanzanas, VVacios, manzana)
 
 # Paso 2 - Rellenar con fachadas
-rellenaFachadas(VManzanas, nmanzanas, VManzanas[0])
+rellenaFachadas(VManzanas, nmanzanas, VManzanas[2])
 
 # x,y = ([] for i in range(2))
 # for fachada in fachadas:
 #     print(fachada)
-    # x.append(fachada['x'])
-    # y.append(fachada['y'])
+# x.append(fachada['x'])
+# y.append(fachada['y'])
 #     p.plot(x, y)
 # p.show()
 
 # Paso 3 - Generar las casas a partir de las fachadas
-generarCasas(fachadas)
+generarCasas(fachadas, VManzanas[2])
+for casa in casas:
+    print(casa)
