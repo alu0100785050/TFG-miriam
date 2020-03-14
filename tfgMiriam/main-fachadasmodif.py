@@ -299,7 +299,24 @@ def rellenaFachadas(VManzanas, nmanzanas, mzn):
 
             else:
                 while dp < di:  # Mientras quede distancia para completar en la distancia recorrida
+                    if cdp == VManzanas[mzn['id']]['acumdist'][segmento]:
+                        ll = longitudEsquina()
 
+                        nfachadas = nfachadas + 1
+                        xvector = VManzanas[mzn['id']]['dX'][segmento]
+                        yvector = VManzanas[mzn['id']]['dY'][segmento]
+                        vx = np.divide(xvector, VManzanas[mzn['id']]['dist'][segmento]) * dp
+                        vy = np.divide(yvector, VManzanas[mzn['id']]['dist'][segmento]) * dp
+                        xx = VManzanas[mzn['id']]['x'][segmento] + vx
+                        yy = VManzanas[mzn['id']]['y'][segmento] + vy
+                        tipo = VManzanas[mzn['id']]['tipo'][segmento]
+
+                        cdp = cdp + ll
+                        dp = dp + ll
+
+                        fachada = {"x": xx, "y": yy, "long": ll, "seg": segmento, "mzn": mzn['id'], "tipo": tipo}
+                        fachadas.insert(nfachadas, fachada)
+                    else:
                         lfac = np.random.normal(45.0207, 10.2515)  # Calcular longitud
                         ajustarLongitud(lfac)
                         dist1 = di - dp - lmin
@@ -347,8 +364,50 @@ def rellenaFachadas(VManzanas, nmanzanas, mzn):
 
 
 # Paso 3 del algoritmo - generar casas a partir de las fachadas
-def corregirEsquinas(fachadas, mzn):
-    pass
+def generarCasas(fachadas, mzn):
+    for index, fachada in enumerate(fachadas):
+        if fachada['tipo'] in 'CC' and fachadas[index - 1]['seg'] != fachadas[index]['seg']:
+            pcasa = np.random.normal(18.1218, 3.1631)
+            pcasa2 = np.random.normal(18.1218, 3.1631)
+            acasa = np.random.normal(28.3898, 4.9329)
+            acasa2 = np.random.normal(28.3898, 4.9329)
+            ajustarProfundidad(pcasa)
+            ajustarProfundidad(pcasa2)
+            ajustarAltura(acasa)
+            ajustarAltura(acasa2)
+
+            # TODO corregir coordenadas de las casas si es necesario, acabar casas de los centros
+            # ¿Corregir solo cuando antes y después sean CC? ¿Si es FM O FV y viene CC también se considera esquina?
+            # ¿Ir jugando con los parámetros hasta encontrar el balance entre ellos?
+            # ¿Corregir coordenadas en las casas si algún parámetro es modificado?
+            if (fachadas[index - 1]['long'] - pcasa) < lmin:
+                pcasa = pmin
+                fachadas[index - 1]['long'] = fachadas[index - 1]['long'] - pcasa
+                if fachadas[index - 1]['long'] < lmin:
+                    fachadas[index - 1]['long'] = fachadas[index - 1]['long'] + fachadas[index - 2]['long']
+                    casa = {"fachada": index - 1, "long": fachadas[index - 1]['long'], "profundidad": pcasa,
+                            "altura": acasa, "mzn": mzn['id'], "seg": fachadas[index - 1]['seg']}
+                    casa2 = {"fachada": index, "long": fachadas[index]['long'], "profundidad": pcasa2, "altura": acasa2,
+                             "mzn": mzn['id'], "seg": fachadas[index]['seg']}
+                    casas.append(casa)
+                    casas.append(casa2)
+
+                else:
+                    casa = {"fachada": index - 1, "long": fachadas[index - 1]['long'], "profundidad": pcasa,
+                            "altura": acasa, "mzn": mzn['id'], "seg": fachadas[index - 1]['seg']}
+                    casa2 = {"fachada": index, "long": fachadas[index]['long'], "profundidad": pcasa2,
+                             "altura": acasa2, "mzn": mzn['id'], "seg": fachadas[index]['seg']}
+                    casas.append(casa)
+                    casas.append(casa2)
+
+            else:
+                fachadas[index - 1]['long'] = fachadas[index - 1]['long'] - pcasa
+                casa = {"fachada": index - 1, "long": fachadas[index - 1]['long'], "profundidad": pcasa,
+                        "altura": acasa, "mzn": mzn['id'], "seg": fachadas[index - 1]['seg']}
+                casa2 = {"fachada": index, "long": fachadas[index]['long'], "profundidad": pcasa2, "altura": acasa2,
+                         "mzn": mzn['id'], "seg": fachadas[index]['seg']}
+                casas.append(casa)
+                casas.append(casa2)
 
 
 # EJECUCIÓN
@@ -367,7 +426,7 @@ for manzana in VManzanas:
     preparaEstructura(VManzanas, nmanzanas, VVacios, manzana)
 
 # Paso 2 - Rellenar con fachadas
-rellenaFachadas(VManzanas, nmanzanas, VManzanas[21])
+rellenaFachadas(VManzanas, nmanzanas, VManzanas[0])
 
 longtotal= 0
 x,y = ([] for i in range(2))
@@ -380,7 +439,7 @@ for fachada in fachadas:
 p.show()
 
 print(longtotal)
-print(VManzanas[21])
+print(VManzanas[0])
 # Paso 3 - Generar las casas a partir de las fachadas
 # generarCasas(fachadas, VManzanas[2])
 # for casa in casas:
