@@ -90,7 +90,6 @@ def preparaEstructura(VManzanas, VEstructuras, mzn):
             elif estructura['tipoestr'] == "vacio":
                 tipo[insertinit + 1:insertend - 1] = ['CV'] * ((insertend - 1) - insertinit)
 
-            # Recalcular campos en manzanas
             VManzanas[mzn['id']]['x'] = tmpX
             VManzanas[mzn['id']]['y'] = tmpY
             while count < len(tmpX) - 1:
@@ -118,7 +117,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
         nfachadas = nfachadas + 1
 
         if VManzanas[mzn['id']]['tipo'][segmento] in ('FM', 'FV', 'CC'):
-            dp = 0  # Distancia recorrida en segmento
+            dp = 0
             di = VManzanas[mzn['id']]['dist'][segmento]
             cdp = VManzanas[mzn['id']]['acumdist'][segmento]
 
@@ -135,7 +134,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
                 print("No se puede construir una fachada más pequeña que el mínimo establecido")
 
                 fachada = {"x": xx, "y": yy, "long": di, "seg": segmento, "mzn": mzn['id'], "tipo": tipo}
-                initialize.fachadas.insert(nfachadas, fachada)
+                fachadas.insert(nfachadas, fachada)
 
             else:
                 while dp < di:
@@ -185,6 +184,32 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
             fachadas.insert(nfachadas, fachada)
 
 
-def corregirEsquinas(fachadas, mzn):
-    for fachada in fachadas:
-        pass
+def generarProfundidad(fachadas, mzn):
+    for index, fachada in enumerate(fachadas[:-1]):
+
+        if fachadas[index-1]['seg'] != fachadas[index]['seg']:
+            pcas = np.random.normal(18.1218, 3.1631)
+            utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
+
+            xvector = mzn['dX'][fachada['seg']]
+            yvector = mzn['dY'][fachada['seg']]
+            perp = [yvector, -xvector]
+            mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
+            vx = np.divide(perp[0], mod) * pcas
+            vy = np.divide(perp[1], mod) * pcas
+            xx = fachadas[index+1]['x'] + vx
+            yy = fachadas[index+1]['y'] + vy
+
+            xvector2 = mzn['dX'][fachadas[index-1]['seg']]
+            yvector2 = mzn['dY'][fachadas[index-1]['seg']]
+            perp2 = [yvector2, -xvector2]
+            mod2 = math.sqrt(perp2[1] ** 2 + perp2[0] ** 2)
+            vx2 = np.divide(perp2[0], mod2) * pcas
+            vy2 = np.divide(perp2[1], mod2) * pcas
+            xx2 = fachadas[index-1]['x'] + vx2
+            yy2 = fachadas[index-1]['y'] + vy2
+
+            print(xx2, yy2)
+            print(xx, yy)
+
+

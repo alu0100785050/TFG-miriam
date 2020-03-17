@@ -47,8 +47,7 @@ def initEstructuras(shpestr, manzanas, estr):
     distinit = 10000
 
     for man in manzanas:
-        for index, (x, y) in enumerate(
-                zip(man['x'][:-1], man['y'][:-1])):
+        for index, (x, y) in enumerate(zip(man['x'][:-1], man['y'][:-1])):
             for index2, coord in enumerate(shpestr.shapeRecords()):
                 for i in coord.shape.points[:]:
 
