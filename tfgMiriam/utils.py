@@ -11,7 +11,7 @@ amin = 28.3898 - 2 * 4.9329
 amax = 28.3898 + 2 * 4.9329
 
 
-def mostrarCasas(casas):
+def mostrarCasasManzana(casas, manzana):
     for casa in casas:
         for coordenadas in casa:
             poly = Polygon([(0, 0), (0, 2), (1, 1), (2, 2), (2, 0), (1, 0.8), (0, 0)])
@@ -49,11 +49,3 @@ def ajustarProfundidad(pcasa, pmax, pmin):
 def ajustarAltura(acasa, amax, amin):
     if acasa > amax or acasa < amin:
         acasa = amin
-
-
-def perpendicularVector(v):
-    vectorCW = [v[1], -v[0]]
-    vectorCCW = [-v[1], v[0]]
-    print(vectorCW, v)
-
-    return np.cross(v, vectorCW)

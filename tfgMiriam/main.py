@@ -28,19 +28,24 @@ for manzana in VManzanas:
 # Paso 2 - Rellenar con fachadas
 build.rellenaFachadas(VManzanas, VManzanas[21], utils.lmin, utils.lmax, fachadas)
 
-# longtotal= 0
-# x,y = ([] for i in range(2))
-# for fachada in fachadas:
-#     longtotal = fachada['long'] + longtotal
-#     print(fachada)
-#     x.append(fachada['x'])
-#     y.append(fachada['y'])
-#     p.plot(x, y)
-#
-# p.show()
-# print(longtotal)
+x,y = ([] for i in range(2))
+for fachada in fachadas:
+    x.append(fachada['x'])
+    y.append(fachada['y'])
+    p.plot(x, y)
 
 
 # Paso 3 - Generar las casas a partir de las fachadas
-build.generarProfundidad(fachadas, VManzanas[21])
+build.generarProfundidad(fachadas, casas, VManzanas[21])
+iniciox,inicioy,finx,finy = ([] for i in range(4))
+for casa in casas:
+    iniciox.append(casa['inicioX'])
+    inicioy.append(casa['inicioY'])
+    finx.append(casa['finX'])
+    finy.append(casa['finY'])
+    p.plot(iniciox, inicioy, 'ro')
+    p.plot(finx, finy, 'ro')
+
+
+p.show()
 

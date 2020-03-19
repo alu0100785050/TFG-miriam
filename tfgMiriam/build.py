@@ -184,32 +184,33 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
             fachadas.insert(nfachadas, fachada)
 
 
-def generarProfundidad(fachadas, mzn):
+def generarProfundidad(fachadas, casas, mzn):
     for index, fachada in enumerate(fachadas[:-1]):
 
-        if fachadas[index-1]['seg'] != fachadas[index]['seg']:
+        if (fachadas[index-1]['seg'] != fachadas[index]['seg']) and fachadas[index-1]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['tipo'] in ('FM', 'FV', 'CC'):
             pcas = np.random.normal(18.1218, 3.1631)
             utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
+            lcas = fachadas[index-1]['long'] + fachadas[index]['long']
 
-            xvector = mzn['dX'][fachada['seg']]
-            yvector = mzn['dY'][fachada['seg']]
+            xvector = mzn['dX'][fachadas[index - 1]['seg']]
+            yvector = mzn['dY'][fachadas[index - 1]['seg']]
             perp = [yvector, -xvector]
             mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
             vx = np.divide(perp[0], mod) * pcas
             vy = np.divide(perp[1], mod) * pcas
-            xx = fachadas[index+1]['x'] + vx
-            yy = fachadas[index+1]['y'] + vy
+            xx = fachadas[index - 1]['x'] + vx
+            yy = fachadas[index - 1]['y'] + vy
 
-            xvector2 = mzn['dX'][fachadas[index-1]['seg']]
-            yvector2 = mzn['dY'][fachadas[index-1]['seg']]
+            xvector2 = mzn['dX'][fachada['seg']]
+            yvector2 = mzn['dY'][fachada['seg']]
             perp2 = [yvector2, -xvector2]
             mod2 = math.sqrt(perp2[1] ** 2 + perp2[0] ** 2)
             vx2 = np.divide(perp2[0], mod2) * pcas
             vy2 = np.divide(perp2[1], mod2) * pcas
-            xx2 = fachadas[index-1]['x'] + vx2
-            yy2 = fachadas[index-1]['y'] + vy2
+            xx2 = fachadas[index+1]['x'] + vx2
+            yy2 = fachadas[index+1]['y'] + vy2
 
-            print(xx2, yy2)
-            print(xx, yy)
+            casa = {'inicioX': xx, 'inicioY':yy, 'finX': xx2, 'finY': yy2, 'mzn': mzn['id'], 'profundidad': pcas, 'longitud': lcas}
+            casas.insert(index, casa)
 
 
