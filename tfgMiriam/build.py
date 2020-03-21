@@ -185,6 +185,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
 
 
 def generarProfundidad(fachadas, casas, mzn):
+    puntoesquina = []
     for index, fachada in enumerate(fachadas[:-1]):
 
         if (fachadas[index-1]['seg'] != fachadas[index]['seg']) and fachadas[index-1]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['tipo'] in ('FM', 'FV', 'CC'):
@@ -210,7 +211,17 @@ def generarProfundidad(fachadas, casas, mzn):
             xx2 = fachadas[index+1]['x'] + vx2
             yy2 = fachadas[index+1]['y'] + vy2
 
-            casa = {'inicioX': xx, 'inicioY':yy, 'finX': xx2, 'finY': yy2, 'mzn': mzn['id'], 'profundidad': pcas, 'longitud': lcas}
-            casas.insert(index, casa)
+            dx1 = mzn['dX'][fachadas[index - 1]['seg']]
+            dy1 = mzn['dY'][fachadas[index - 1]['seg']]
+            dx2 = mzn['dX'][fachadas[index]['seg']]
+            dy2 = mzn['dY'][fachadas[index]['seg']]
 
+            puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
+
+            casa = {"mzn": mzn, "xfachada1": fachadas[index-1]['x'], "yfachada1": fachadas[index-1]['y'],
+                    "xfachada2": fachadas[index]['x'], "yfachada2": fachadas[index]['y'],
+                    "xfachada3": fachadas[index+1]['x'], "yfachada3": fachadas[index+1]['y'],
+                    "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "puntoesquina": puntoesquina}
+
+            casas.insert(index, casa)
 

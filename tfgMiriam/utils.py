@@ -49,3 +49,9 @@ def ajustarProfundidad(pcasa, pmax, pmin):
 def ajustarAltura(acasa, amax, amin):
     if acasa > amax or acasa < amin:
         acasa = amin
+
+
+def intersect(x0a, y0a, dxa, dya, x0b, y0b, dxb, dyb):
+    t = (dyb*(x0b-x0a)-dxb*(y0b-y0a)) / (dxa*dyb-dxb*dya)
+
+    return [x0a+dxa*t, y0a+dya*t]
