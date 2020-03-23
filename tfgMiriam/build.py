@@ -1,7 +1,8 @@
 import utils
 import numpy as np
 import math
-import initialize
+
+np.random.seed(458)
 
 
 def preparaEstructura(VManzanas, VEstructuras, mzn):
@@ -66,8 +67,8 @@ def preparaEstructura(VManzanas, VEstructuras, mzn):
                 nuevox = px + distend * (ux / normu)
                 nuevoy = py + distend * (uy / normu)
 
-                tmpX.insert(send + 1, nuevox)
-                tmpY.insert(send + 1, nuevoy)
+                tmpX.insert(insertend, nuevox)
+                tmpY.insert(insertend, nuevoy)
 
                 insertend = insertend + 1
 

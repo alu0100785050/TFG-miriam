@@ -1,5 +1,4 @@
 from matplotlib import pyplot as p
-import pprint
 import copy
 import initialize
 import build
@@ -26,7 +25,7 @@ for manzana in VManzanas:
 
 
 # Paso 2 - Rellenar con fachadas
-build.rellenaFachadas(VManzanas, VManzanas[25], utils.lmin, utils.lmax, fachadas)
+build.rellenaFachadas(VManzanas, VManzanas[23], utils.lmin, utils.lmax, fachadas)
 
 x,y = ([] for i in range(2))
 for fachada in fachadas:
@@ -36,7 +35,8 @@ for fachada in fachadas:
 
 
 # Paso 3 - Generar las casas a partir de las fachadas
-build.generarProfundidad(fachadas, casas, VManzanas[25])
+build.generarProfundidad(fachadas, casas, VManzanas[23])
+
 for index, casa in enumerate(casas):
 
     xx, yy = ([] for i in range(2))
@@ -55,7 +55,4 @@ for index, casa in enumerate(casas):
     xx.append(casa['xfachada1'])
     yy.append(casa['yfachada1'])
     p.plot(xx, yy)
-
-
 p.show()
-

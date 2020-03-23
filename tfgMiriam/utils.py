@@ -2,6 +2,7 @@ from matplotlib import pyplot as p
 from shapely.geometry.polygon import LinearRing, Polygon
 import numpy as np
 
+
 global lmin, lmax, pmin, pmax, amin, amax
 lmin = 45.0207 - 2 * 10.2515
 lmax = 45.0207 + 2 * 10.2515
