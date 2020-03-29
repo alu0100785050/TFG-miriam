@@ -114,7 +114,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
     nsegmentos = VManzanas[mzn['id']]['nvectores']
     nfachadas, x, y, segmento = (0, 0, 0, 0)
 
-    for segmento in range(nsegmentos):
+    for index, segmento in enumerate(range(nsegmentos)):
         nfachadas = nfachadas + 1
 
         if VManzanas[mzn['id']]['tipo'][segmento] in ('FM', 'FV', 'CC'):
@@ -139,18 +139,26 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
 
             else:
                 while dp < di:
-
                         lfac = np.random.normal(45.0207, 10.2515)
                         utils.ajustarLongitud(lfac, lmax, lmin)
                         dist1 = di - dp - lmin
 
-                        if lfac > dist1:
+                        if lmin < dist1 < lmax:
                             lfac = dist1
-                            dist2 = di - dp
 
-                            if lmin <= dist2 <= lmax:
-                                lfac = dist2
+                        # if lfac > dist1:
+                        #     lfac = dist1
+                        #     dist2 = di - dp
+                        #
+                        #     if lmin <= dist2 <= lmax:
+                        #         lfac = dist2
 
+                        # if lfac < lmin and fachadas[index - 1]['seg'] == segmento:
+                        #     lfac = lfac + fachadas[index - 1]['long']
+                        #
+                        # if lfac < lmin and fachadas[index + 1]['seg'] == segmento:
+                        #     lfac = lfac + fachadas[index + 1]['long']
+                                    
                         nfachadas = nfachadas + 1
                         xvector = VManzanas[mzn['id']]['dX'][segmento]
                         yvector = VManzanas[mzn['id']]['dY'][segmento]
@@ -186,13 +194,16 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
 
 
 def generarProfundidad(fachadas, casas, mzn):
-    puntoesquina = []
+    tolerancia = 20
     for index, fachada in enumerate(fachadas[:-1]):
 
         if (fachadas[index-1]['seg'] != fachadas[index]['seg']) and fachadas[index-1]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['tipo'] in ('FM', 'FV', 'CC'):
             pcas = np.random.normal(18.1218, 3.1631)
             utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
             lcas = fachadas[index-1]['long'] + fachadas[index]['long']
+
+            if (math.fabs(fachadas[index-1]['long'] - fachadas[index]['long'])) < tolerancia:
+                pcas = utils.pmin
 
             xvector = mzn['dX'][fachadas[index - 1]['seg']]
             yvector = mzn['dY'][fachadas[index - 1]['seg']]
@@ -219,8 +230,8 @@ def generarProfundidad(fachadas, casas, mzn):
 
             puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
 
-            casa = {"mzn": mzn, "xfachada1": fachadas[index-1]['x'], "yfachada1": fachadas[index-1]['y'],
-                    "xfachada2": fachadas[index]['x'], "yfachada2": fachadas[index]['y'],
+            casa = {"mzn": mzn['id'], "longitudcasa": lcas, "profundidadcasa": pcas, "xfachada1": fachadas[index-1]['x'],
+                    "yfachada1": fachadas[index-1]['y'], "xfachada2": fachadas[index]['x'], "yfachada2": fachadas[index]['y'],
                     "xfachada3": fachadas[index+1]['x'], "yfachada3": fachadas[index+1]['y'],
                     "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "puntoesquina": puntoesquina}
 
