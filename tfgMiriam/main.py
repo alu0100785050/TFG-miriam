@@ -29,16 +29,15 @@ build.rellenaFachadas(VManzanas, VManzanas[31], utils.lmin, utils.lmax, fachadas
 
 x,y = ([] for i in range(2))
 for fachada in fachadas:
+    print(fachada)
     x.append(fachada['x'])
     y.append(fachada['y'])
     p.plot(x, y)
-
 
 # Paso 3 - Generar las casas a partir de las fachadas
 build.generarProfundidad(fachadas, casas, VManzanas[31])
 
 for index, casa in enumerate(casas):
-    print(casa)
     xx, yy = ([] for i in range(2))
     xx.append(casa['xfachada1'])
     yy.append(casa['yfachada1'])

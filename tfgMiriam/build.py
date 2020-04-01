@@ -122,7 +122,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
             di = VManzanas[mzn['id']]['dist'][segmento]
             cdp = VManzanas[mzn['id']]['acumdist'][segmento]
 
-            if di < lmin:
+            if di < utils.lmin:
                 nfachadas = nfachadas + 1
                 xvector = VManzanas[mzn['id']]['dX'][segmento]
                 yvector = VManzanas[mzn['id']]['dY'][segmento]
@@ -139,26 +139,20 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
 
             else:
                 while dp < di:
-                        lfac = np.random.normal(45.0207, 10.2515)
-                        utils.ajustarLongitud(lfac, lmax, lmin)
-                        dist1 = di - dp - lmin
+                    lfac = np.random.normal(45.0207, 10.2515)
+                    utils.ajustarLongitud(lfac, utils.lmax, utils.lmin)
+                    dist1 = di - dp
 
-                        if lmin < dist1 < lmax:
-                            lfac = dist1
+                    if 0 < dist1 < utils.lmin:
+                        nfachadas = nfachadas + 1
+                        lfac = fachadas[-1]['long'] + dist1
+                        fachadas[-1].update(long=lfac)
 
-                        # if lfac > dist1:
-                        #     lfac = dist1
-                        #     dist2 = di - dp
-                        #
-                        #     if lmin <= dist2 <= lmax:
-                        #         lfac = dist2
+                        dp = dp + dist1
+                        cdp = cdp + dist1
 
-                        # if lfac < lmin and fachadas[index - 1]['seg'] == segmento:
-                        #     lfac = lfac + fachadas[index - 1]['long']
-                        #
-                        # if lfac < lmin and fachadas[index + 1]['seg'] == segmento:
-                        #     lfac = lfac + fachadas[index + 1]['long']
-                                    
+                    else:
+
                         nfachadas = nfachadas + 1
                         xvector = VManzanas[mzn['id']]['dX'][segmento]
                         yvector = VManzanas[mzn['id']]['dY'][segmento]
@@ -191,10 +185,11 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
 
             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
             fachadas.insert(nfachadas, fachada)
+            print(fachadas[-1])
 
 
 def generarProfundidad(fachadas, casas, mzn):
-    tolerancia = 20
+    tolerancia = 22
     for index, fachada in enumerate(fachadas[:-1]):
 
         if (fachadas[index-1]['seg'] != fachadas[index]['seg']) and fachadas[index-1]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['tipo'] in ('FM', 'FV', 'CC'):
@@ -203,6 +198,9 @@ def generarProfundidad(fachadas, casas, mzn):
             lcas = fachadas[index-1]['long'] + fachadas[index]['long']
 
             if (math.fabs(fachadas[index-1]['long'] - fachadas[index]['long'])) < tolerancia:
+                pcas = utils.pmin
+
+            if fachadas[index - 2]['seg'] != fachadas[index-1]['seg'] != fachadas[index]['seg']:
                 pcas = utils.pmin
 
             xvector = mzn['dX'][fachadas[index - 1]['seg']]
