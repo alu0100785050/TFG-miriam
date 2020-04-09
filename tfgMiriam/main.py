@@ -25,33 +25,28 @@ for manzana in VManzanas:
 
 
 # Paso 2 - Rellenar con fachadas
-build.rellenaFachadas(VManzanas, VManzanas[31], utils.lmin, utils.lmax, fachadas)
+build.rellenaFachadas(VManzanas, VManzanas[9], utils.lmin, utils.lmax, fachadas)
 
 x,y = ([] for i in range(2))
 for fachada in fachadas:
-    print(fachada)
+   #print(fachada)
     x.append(fachada['x'])
     y.append(fachada['y'])
     p.plot(x, y)
 
 # Paso 3 - Generar las casas a partir de las fachadas
-build.generarProfundidad(fachadas, casas, VManzanas[31])
+build.generarProfundidad(fachadas, casas, VManzanas[9])
 
 for index, casa in enumerate(casas):
-    xx, yy = ([] for i in range(2))
-    xx.append(casa['xfachada1'])
-    yy.append(casa['yfachada1'])
-    xx.append(casa['xfachada2'])
-    yy.append(casa['yfachada2'])
-    xx.append(casa['xfachada3'])
-    yy.append(casa['yfachada3'])
-    xx.append(casa['x2'])
-    yy.append(casa['y2'])
-    xx.append(casa['puntoesquina'][0])
-    yy.append(casa['puntoesquina'][1])
-    xx.append(casa['x1'])
-    yy.append(casa['y1'])
-    xx.append(casa['xfachada1'])
-    yy.append(casa['yfachada1'])
-    p.plot(xx, yy)
+    x, y = casa['poligono'].exterior.xy
+    p.plot(x, y)
 p.show()
+
+# for index, casa in enumerate(casas[:-1]):
+#
+#     if utils.doIntersect(casa['poligono'], casas[index+1]['poligono']):
+#         newP = utils.mergePolygons(casa['poligono'], casas[index+1]['poligono'])
+#         x, y = newP.exterior.xy
+#         p.plot(x,y)
+#         p.show()
+

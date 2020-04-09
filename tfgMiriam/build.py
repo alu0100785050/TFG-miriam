@@ -1,6 +1,8 @@
 import utils
 import numpy as np
 import math
+from shapely.geometry.polygon import LinearRing, Polygon
+
 
 np.random.seed(458)
 
@@ -185,7 +187,6 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
 
             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
             fachadas.insert(nfachadas, fachada)
-            print(fachadas[-1])
 
 
 def generarProfundidad(fachadas, casas, mzn):
@@ -228,10 +229,15 @@ def generarProfundidad(fachadas, casas, mzn):
 
             puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
 
+            polygon = Polygon(
+                [(fachadas[index-1]['x'], fachadas[index-1]['y']), (fachadas[index]['x'], fachadas[index]['y']),
+                 (fachadas[index+1]['x'], fachadas[index+1]['y']), (xx2, yy2), (puntoesquina[0], puntoesquina[1]),
+                 (xx, yy)])
+
             casa = {"mzn": mzn['id'], "longitudcasa": lcas, "profundidadcasa": pcas, "xfachada1": fachadas[index-1]['x'],
                     "yfachada1": fachadas[index-1]['y'], "xfachada2": fachadas[index]['x'], "yfachada2": fachadas[index]['y'],
                     "xfachada3": fachadas[index+1]['x'], "yfachada3": fachadas[index+1]['y'],
-                    "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "puntoesquina": puntoesquina}
+                    "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "puntoesquina": puntoesquina, "poligono": polygon}
 
             casas.insert(index, casa)
 

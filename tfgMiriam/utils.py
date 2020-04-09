@@ -1,5 +1,5 @@
 from matplotlib import pyplot as p
-from shapely.geometry.polygon import LinearRing, Polygon
+from shapely.ops import cascaded_union
 import numpy as np
 
 
@@ -12,17 +12,18 @@ amin = 28.3898 - 2 * 4.9329
 amax = 28.3898 + 2 * 4.9329
 
 
-def mostrarCasasManzana(casas, manzana):
-    for casa in casas:
-        for coordenadas in casa:
-            poly = Polygon([(0, 0), (0, 2), (1, 1), (2, 2), (2, 0), (1, 0.8), (0, 0)])
-            x, y = poly.exterior.xy
+def doIntersect(polygon1, polygon2):
+    if polygon1.intersects(polygon2):
+        return True
+    else:
+        return False
 
-            fig = p.figure(1, figsize=(5, 5), dpi=90)
-            ax = fig.add_subplot(111)
-            ax.plot(x, y, color='#6699cc', alpha=0.7, linewidth=2, solid_capstyle='round', zorder=2)
-            ax.set_title('Polygon')
-    p.show()
+
+def mergePolygons(polygon1, polygon2):
+    polygons = [polygon1, polygon2]
+    u = cascaded_union(polygons)
+
+    return u
 
 
 def calculateVector(p, q, coord):
