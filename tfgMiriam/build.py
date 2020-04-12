@@ -135,7 +135,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
                 cdp = cdp + di
                 print("No se puede construir una fachada más pequeña que el mínimo establecido")
 
-                fachada = {"x": xx, "y": yy, "long": di, "seg": segmento, "mzn": mzn['id'], "tipo": tipo, "casa": False}
+                fachada = {"x": xx, "y": yy, "long": di, "seg": segmento, "mzn": mzn['id'], "tipo": tipo, "esquina": False}
                 fachadas.insert(nfachadas, fachada)
 
             else:
@@ -167,7 +167,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
                         dp = dp + lfac
 
                         fachada = {"x": xx, "y": yy, "long": lfac, "seg": segmento, "mzn": mzn['id'], "tipo": tipo,
-                                   "casa": False}
+                                   "esquina": False}
                         fachadas.insert(nfachadas, fachada)
 
         else:
@@ -185,7 +185,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
             cdp = cdp + longitud
             segmento = segmento + 1
 
-            fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo, "casa": False}
+            fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo, "esquina": False}
             fachadas.insert(nfachadas, fachada)
 
 
@@ -193,8 +193,8 @@ def generarProfundidad(fachadas, casas, mzn):
     tolerancia = 22
     for index, fachada in enumerate(fachadas[:-1]):
 
-        if fachadas[index-1]['seg'] != fachadas[index ]['seg']:
-            if fachadas[index]['casa'] == False and fachadas[index - 1]['casa'] == False:
+        if fachadas[index]['seg'] != fachadas[index -1]['seg']:
+            if fachadas[index]['esquina'] == False and fachadas[index - 1]['esquina'] == False:
                 if fachadas[index - 1]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['tipo'] in ('FM', 'FV', 'CC'):
                     pcas = np.random.normal(18.1218, 3.1631)
                     utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
@@ -243,40 +243,36 @@ def generarProfundidad(fachadas, casas, mzn):
                             "xfachada3": fachadas[index + 1]['x'], "yfachada3": fachadas[index + 1]['y'],
                             "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "puntoesquina": puntoesquina, "poligono": polygon}
 
-                    fachadas[index - 1].update(casa=True)
-                    fachadas[index].update(casa=True)
+                    fachadas[index - 1].update(esquina=True)
+                    fachadas[index].update(esquina=True)
                     casas.insert(index, casa)
 
-        # else:
-        #     if fachadas[index]['seg'] != fachadas[index+1]['seg']:
-        #         if fachadas[index]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['casa'] == False:
-        #             pcas = np.random.normal(18.1218, 3.1631)
-        #             utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
-        #
-        #             xvector = mzn['dX'][fachadas[index]['seg']]
-        #             yvector = mzn['dY'][fachadas[index]['seg']]
-        #             perp = [yvector, -xvector]
-        #             mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
-        #
-        #             vx = np.divide(perp[0], mod) * pcas
-        #             vy = np.divide(perp[1], mod) * pcas
-        #             xx = fachadas[index]['x'] + vx
-        #             yy = fachadas[index]['y'] + vy
-        #
-        #             vx2 = np.divide(perp[0], mod) * pcas
-        #             vy2 = np.divide(perp[1], mod) * pcas
-        #             xx2 = fachadas[index + 1]['x'] + vx2
-        #             yy2 = fachadas[index + 1]['y'] + vy2
-        #
-        #             polygon = Polygon(
-        #                 [(fachadas[index]['x'], fachadas[index]['y']),
-        #                  (fachadas[index + 1]['x'], fachadas[index + 1]['y']),
-        #                  (xx2, yy2), (xx, yy)])
-        #
-        #             casa = {"mzn": mzn['id'], "longitudcasa": fachadas[index]['long'], "profundidadcasa": pcas,
-        #                     "xfachada1": fachadas[index]['x'], "yfachada1": fachadas[index]['y'],
-        #                     "xfachada2": fachadas[index+1]['x'], "yfachada2": fachadas[index+1]['y'],
-        #                     "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "poligono": polygon}
-        #
-        #             fachadas[index].update(casa=True)
-        #             casas.insert(index, casa)
+        else:
+            if fachadas[index]['seg'] == fachadas[index+1]['seg']:
+                if fachadas[index]['tipo'] in ('FM', 'FV', 'CC'):
+                    pcas = np.random.normal(18.1218, 3.1631)
+                    utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
+
+                    xvector = mzn['dX'][fachadas[index]['seg']]
+                    yvector = mzn['dY'][fachadas[index]['seg']]
+                    perp = [yvector, -xvector]
+                    mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
+
+                    vx = np.divide(perp[0], mod) * pcas
+                    vy = np.divide(perp[1], mod) * pcas
+                    xx = fachadas[index]['x'] + vx
+                    yy = fachadas[index]['y'] + vy
+                    xx2 = fachadas[index + 1]['x'] + vx
+                    yy2 = fachadas[index + 1]['y'] + vy
+
+                    polygon = Polygon(
+                        [(fachadas[index]['x'], fachadas[index]['y']),
+                         (fachadas[index + 1]['x'], fachadas[index + 1]['y']),
+                         (xx2, yy2), (xx, yy)])
+
+                    casa = {"mzn": mzn['id'], "longitudcasa": fachadas[index]['long'], "profundidadcasa": pcas,
+                            "xfachada1": fachadas[index]['x'], "yfachada1": fachadas[index]['y'],
+                            "xfachada2": fachadas[index+1]['x'], "yfachada2": fachadas[index+1]['y'],
+                            "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "poligono": polygon}
+
+                    casas.insert(index, casa)

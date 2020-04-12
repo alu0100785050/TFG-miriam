@@ -25,7 +25,7 @@ for manzana in VManzanas:
 
 
 # Paso 2 - Rellenar con fachadas
-build.rellenaFachadas(VManzanas, VManzanas[0], utils.lmin, utils.lmax, fachadas)
+build.rellenaFachadas(VManzanas, VManzanas[24], utils.lmin, utils.lmax, fachadas)
 
 x,y = ([] for i in range(2))
 for fachada in fachadas:
@@ -35,7 +35,7 @@ for fachada in fachadas:
     p.plot(x, y)
 
 # Paso 3 - Generar las casas a partir de las fachadas
-build.generarProfundidad(fachadas, casas, VManzanas[0])
+build.generarProfundidad(fachadas, casas, VManzanas[24])
 
 for index, casa in enumerate(casas):
     x, y = casa['poligono'].exterior.xy
