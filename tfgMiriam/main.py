@@ -25,7 +25,7 @@ for manzana in VManzanas:
 
 
 # Paso 2 - Rellenar con fachadas
-build.rellenaFachadas(VManzanas, VManzanas[9], utils.lmin, utils.lmax, fachadas)
+build.rellenaFachadas(VManzanas, VManzanas[0], utils.lmin, utils.lmax, fachadas)
 
 x,y = ([] for i in range(2))
 for fachada in fachadas:
@@ -35,18 +35,14 @@ for fachada in fachadas:
     p.plot(x, y)
 
 # Paso 3 - Generar las casas a partir de las fachadas
-build.generarProfundidad(fachadas, casas, VManzanas[9])
+build.generarProfundidad(fachadas, casas, VManzanas[0])
 
 for index, casa in enumerate(casas):
     x, y = casa['poligono'].exterior.xy
     p.plot(x, y)
+
 p.show()
 
-# for index, casa in enumerate(casas[:-1]):
-#
-#     if utils.doIntersect(casa['poligono'], casas[index+1]['poligono']):
-#         newP = utils.mergePolygons(casa['poligono'], casas[index+1]['poligono'])
-#         x, y = newP.exterior.xy
-#         p.plot(x,y)
-#         p.show()
+# Problemas con 11, 19, 22, 24, 29, 31
+
 

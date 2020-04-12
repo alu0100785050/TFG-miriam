@@ -3,7 +3,6 @@ import numpy as np
 import math
 from shapely.geometry.polygon import LinearRing, Polygon
 
-
 np.random.seed(458)
 
 
@@ -136,7 +135,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
                 cdp = cdp + di
                 print("No se puede construir una fachada más pequeña que el mínimo establecido")
 
-                fachada = {"x": xx, "y": yy, "long": di, "seg": segmento, "mzn": mzn['id'], "tipo": tipo}
+                fachada = {"x": xx, "y": yy, "long": di, "seg": segmento, "mzn": mzn['id'], "tipo": tipo, "casa": False}
                 fachadas.insert(nfachadas, fachada)
 
             else:
@@ -167,7 +166,8 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
                         cdp = cdp + lfac
                         dp = dp + lfac
 
-                        fachada = {"x": xx, "y": yy, "long": lfac, "seg": segmento, "mzn": mzn['id'], "tipo": tipo}
+                        fachada = {"x": xx, "y": yy, "long": lfac, "seg": segmento, "mzn": mzn['id'], "tipo": tipo,
+                                   "casa": False}
                         fachadas.insert(nfachadas, fachada)
 
         else:
@@ -185,7 +185,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
             cdp = cdp + longitud
             segmento = segmento + 1
 
-            fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo}
+            fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo, "casa": False}
             fachadas.insert(nfachadas, fachada)
 
 
@@ -193,51 +193,90 @@ def generarProfundidad(fachadas, casas, mzn):
     tolerancia = 22
     for index, fachada in enumerate(fachadas[:-1]):
 
-        if (fachadas[index-1]['seg'] != fachadas[index]['seg']) and fachadas[index-1]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['tipo'] in ('FM', 'FV', 'CC'):
-            pcas = np.random.normal(18.1218, 3.1631)
-            utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
-            lcas = fachadas[index-1]['long'] + fachadas[index]['long']
+        if fachadas[index-1]['seg'] != fachadas[index ]['seg']:
+            if fachadas[index]['casa'] == False and fachadas[index - 1]['casa'] == False:
+                if fachadas[index - 1]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['tipo'] in ('FM', 'FV', 'CC'):
+                    pcas = np.random.normal(18.1218, 3.1631)
+                    utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
+                    lcas = fachadas[index - 1]['long'] + fachadas[index]['long']
 
-            if (math.fabs(fachadas[index-1]['long'] - fachadas[index]['long'])) < tolerancia:
-                pcas = utils.pmin
+                    if (math.fabs(fachadas[index - 1]['long'] - fachadas[index]['long'])) < tolerancia:
+                        pcas = utils.pmin
 
-            if fachadas[index - 2]['seg'] != fachadas[index-1]['seg'] != fachadas[index]['seg']:
-                pcas = utils.pmin
+                    if fachadas[index - 2]['seg'] != fachadas[index - 1]['seg'] != fachadas[index]['seg']:
+                        pcas = utils.pmin
 
-            xvector = mzn['dX'][fachadas[index - 1]['seg']]
-            yvector = mzn['dY'][fachadas[index - 1]['seg']]
-            perp = [yvector, -xvector]
-            mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
-            vx = np.divide(perp[0], mod) * pcas
-            vy = np.divide(perp[1], mod) * pcas
-            xx = fachadas[index - 1]['x'] + vx
-            yy = fachadas[index - 1]['y'] + vy
+                    xvector = mzn['dX'][fachadas[index - 1]['seg']]
+                    yvector = mzn['dY'][fachadas[index - 1]['seg']]
+                    perp = [yvector, -xvector]
+                    mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
+                    vx = np.divide(perp[0], mod) * pcas
+                    vy = np.divide(perp[1], mod) * pcas
+                    xx = fachadas[index - 1]['x'] + vx
+                    yy = fachadas[index - 1]['y'] + vy
 
-            xvector2 = mzn['dX'][fachada['seg']]
-            yvector2 = mzn['dY'][fachada['seg']]
-            perp2 = [yvector2, -xvector2]
-            mod2 = math.sqrt(perp2[1] ** 2 + perp2[0] ** 2)
-            vx2 = np.divide(perp2[0], mod2) * pcas
-            vy2 = np.divide(perp2[1], mod2) * pcas
-            xx2 = fachadas[index+1]['x'] + vx2
-            yy2 = fachadas[index+1]['y'] + vy2
+                    xvector2 = mzn['dX'][fachada['seg']]
+                    yvector2 = mzn['dY'][fachada['seg']]
+                    perp2 = [yvector2, -xvector2]
+                    mod2 = math.sqrt(perp2[1] ** 2 + perp2[0] ** 2)
+                    vx2 = np.divide(perp2[0], mod2) * pcas
+                    vy2 = np.divide(perp2[1], mod2) * pcas
+                    xx2 = fachadas[index + 1]['x'] + vx2
+                    yy2 = fachadas[index + 1]['y'] + vy2
 
-            dx1 = mzn['dX'][fachadas[index - 1]['seg']]
-            dy1 = mzn['dY'][fachadas[index - 1]['seg']]
-            dx2 = mzn['dX'][fachadas[index]['seg']]
-            dy2 = mzn['dY'][fachadas[index]['seg']]
+                    dx1 = mzn['dX'][fachadas[index - 1]['seg']]
+                    dy1 = mzn['dY'][fachadas[index - 1]['seg']]
+                    dx2 = mzn['dX'][fachadas[index]['seg']]
+                    dy2 = mzn['dY'][fachadas[index]['seg']]
 
-            puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
+                    puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
 
-            polygon = Polygon(
-                [(fachadas[index-1]['x'], fachadas[index-1]['y']), (fachadas[index]['x'], fachadas[index]['y']),
-                 (fachadas[index+1]['x'], fachadas[index+1]['y']), (xx2, yy2), (puntoesquina[0], puntoesquina[1]),
-                 (xx, yy)])
+                    polygon = Polygon(
+                        [(fachadas[index - 1]['x'], fachadas[index - 1]['y']), (fachadas[index]['x'], fachadas[index]['y']),
+                         (fachadas[index + 1]['x'], fachadas[index + 1]['y']), (xx2, yy2), (puntoesquina[0], puntoesquina[1]),
+                         (xx, yy)])
 
-            casa = {"mzn": mzn['id'], "longitudcasa": lcas, "profundidadcasa": pcas, "xfachada1": fachadas[index-1]['x'],
-                    "yfachada1": fachadas[index-1]['y'], "xfachada2": fachadas[index]['x'], "yfachada2": fachadas[index]['y'],
-                    "xfachada3": fachadas[index+1]['x'], "yfachada3": fachadas[index+1]['y'],
-                    "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "puntoesquina": puntoesquina, "poligono": polygon}
+                    casa = {"mzn": mzn['id'], "longitudcasa": lcas, "profundidadcasa": pcas,
+                            "xfachada1": fachadas[index - 1]['x'],
+                            "yfachada1": fachadas[index - 1]['y'], "xfachada2": fachadas[index]['x'],
+                            "yfachada2": fachadas[index]['y'],
+                            "xfachada3": fachadas[index + 1]['x'], "yfachada3": fachadas[index + 1]['y'],
+                            "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "puntoesquina": puntoesquina, "poligono": polygon}
 
-            casas.insert(index, casa)
+                    fachadas[index - 1].update(casa=True)
+                    fachadas[index].update(casa=True)
+                    casas.insert(index, casa)
 
+        # else:
+        #     if fachadas[index]['seg'] != fachadas[index+1]['seg']:
+        #         if fachadas[index]['tipo'] in ('FM', 'FV', 'CC') and fachadas[index]['casa'] == False:
+        #             pcas = np.random.normal(18.1218, 3.1631)
+        #             utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
+        #
+        #             xvector = mzn['dX'][fachadas[index]['seg']]
+        #             yvector = mzn['dY'][fachadas[index]['seg']]
+        #             perp = [yvector, -xvector]
+        #             mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
+        #
+        #             vx = np.divide(perp[0], mod) * pcas
+        #             vy = np.divide(perp[1], mod) * pcas
+        #             xx = fachadas[index]['x'] + vx
+        #             yy = fachadas[index]['y'] + vy
+        #
+        #             vx2 = np.divide(perp[0], mod) * pcas
+        #             vy2 = np.divide(perp[1], mod) * pcas
+        #             xx2 = fachadas[index + 1]['x'] + vx2
+        #             yy2 = fachadas[index + 1]['y'] + vy2
+        #
+        #             polygon = Polygon(
+        #                 [(fachadas[index]['x'], fachadas[index]['y']),
+        #                  (fachadas[index + 1]['x'], fachadas[index + 1]['y']),
+        #                  (xx2, yy2), (xx, yy)])
+        #
+        #             casa = {"mzn": mzn['id'], "longitudcasa": fachadas[index]['long'], "profundidadcasa": pcas,
+        #                     "xfachada1": fachadas[index]['x'], "yfachada1": fachadas[index]['y'],
+        #                     "xfachada2": fachadas[index+1]['x'], "yfachada2": fachadas[index+1]['y'],
+        #                     "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "poligono": polygon}
+        #
+        #             fachadas[index].update(casa=True)
+        #             casas.insert(index, casa)
