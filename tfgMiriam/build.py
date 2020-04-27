@@ -111,7 +111,8 @@ def preparaEstructura(VManzanas, VEstructuras, mzn):
             estructura['segend'] = insertend
 
 
-def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
+def rellenaFachadas(VManzanas, mzn, lmin, lmax):
+    fachadas = []
     nsegmentos = VManzanas[mzn['id']]['nvectores']
     nfachadas, x, y, segmento = (0, 0, 0, 0)
 
@@ -188,9 +189,12 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax, fachadas):
             fachada = {"x": xx, "y": yy, "long": longitud, "seg": seg, "mzn": mzn['id'], "tipo": tipo, "esquina": False}
             fachadas.insert(nfachadas, fachada)
 
+    mzn['fachadas'] = fachadas
 
-def generarProfundidad(fachadas, casas, mzn):
+
+def generarProfundidad(fachadas, mzn):
     tolerancia = 22
+    casas = []
     for index, fachada in enumerate(fachadas[:-1]):
 
         if fachadas[index]['seg'] != fachadas[index -1]['seg']:
@@ -200,11 +204,11 @@ def generarProfundidad(fachadas, casas, mzn):
                     utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
                     lcas = fachadas[index - 1]['long'] + fachadas[index]['long']
 
-                    if (math.fabs(fachadas[index - 1]['long'] - fachadas[index]['long'])) < tolerancia:
-                        pcas = utils.pmin
+                    # if (math.fabs(fachadas[index - 1]['long'] - fachadas[index]['long'])) < tolerancia:
+                    #     pcas = utils.pmin
 
-                    if fachadas[index - 2]['seg'] != fachadas[index - 1]['seg'] != fachadas[index]['seg']:
-                        pcas = utils.pmin
+                    # if fachadas[index - 2]['seg'] != fachadas[index - 1]['seg'] != fachadas[index]['seg']:
+                    #     pcas = utils.pmin
 
                     xvector = mzn['dX'][fachadas[index - 1]['seg']]
                     yvector = mzn['dY'][fachadas[index - 1]['seg']]
@@ -276,3 +280,5 @@ def generarProfundidad(fachadas, casas, mzn):
                             "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "poligono": polygon}
 
                     casas.insert(index, casa)
+
+    mzn['casas'] = casas

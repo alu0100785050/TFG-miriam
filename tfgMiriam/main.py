@@ -5,7 +5,7 @@ import build
 import utils
 
 
-manzanas, muros, vacios, fachadas, casas = ([] for i in range(5))
+manzanas, muros, vacios = ([] for i in range(3))
 
 
 # Paso 0 - Inicializar manzanas, muros y vacios
@@ -19,28 +19,30 @@ VManzanas = copy.deepcopy(manzanas)
 VMuros = copy.deepcopy(muros)
 VVacios = copy.deepcopy(vacios)
 
-for manzana in VManzanas:
-    build.preparaEstructura(VManzanas, VMuros, manzana)
-    build.preparaEstructura(VManzanas, VVacios, manzana)
+try:
+    for manzana in VManzanas:
+        # build.preparaEstructura(VManzanas, VMuros, manzana)
+         build.preparaEstructura(VManzanas, VVacios, manzana)
+except IndexError:
+        print(manzana)
 
 
 # Paso 2 - Rellenar con fachadas
-build.rellenaFachadas(VManzanas, VManzanas[24], utils.lmin, utils.lmax, fachadas)
+# for manzana in VManzanas:
+#     build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
+    #build.generarProfundidad(fachadas, casas, manzana)
 
-x,y = ([] for i in range(2))
-for fachada in fachadas:
-   #print(fachada)
-    x.append(fachada['x'])
-    y.append(fachada['y'])
+x, y = ([] for i in range(2))
+for manzana in VManzanas:
+    x, y = ([] for i in range(2))
+    x = [x for x in manzana['x']]
+    y = [y for y in manzana['y']]
     p.plot(x, y)
 
-# Paso 3 - Generar las casas a partir de las fachadas
-build.generarProfundidad(fachadas, casas, VManzanas[24])
-
-for index, casa in enumerate(casas):
-    x, y = casa['poligono'].exterior.xy
-    p.plot(x, y)
-
+# for index, casa in enumerate(casas):
+#     x, y = casa['poligono'].exterior.xy
+#     p.plot(x, y)
+#
 p.show()
 
 # Problemas con 11, 19, 22, 24, 29, 31

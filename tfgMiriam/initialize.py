@@ -3,9 +3,9 @@ import utils
 import shapefile
 
 
-shpma = shapefile.Reader("../shapefiles/manzana")
-shpva = shapefile.Reader("../shapefiles/void")
-shpmu = shapefile.Reader("../shapefiles/wall")
+shpma = shapefile.Reader("../shapefilestotal/manzana")
+shpva = shapefile.Reader("../shapefilestotal/void")
+shpmu = shapefile.Reader("../shapefilestotal/wall")
 
 
 def initManzanas(shpma, manzanas):
@@ -35,7 +35,7 @@ def initManzanas(shpma, manzanas):
 
         manzana = {"id": index, "x": xx, "y": yy, "dX": vectoresx, "dY": vectoresy, "dist": distpq,
                    "acumdist": acumdist,
-                   "nvectores": nvect, "tipo": tipovert}
+                   "nvectores": nvect, "tipo": tipovert, "fachadas": [], "casas": []}
         manzanas.append(manzana)
 
 
