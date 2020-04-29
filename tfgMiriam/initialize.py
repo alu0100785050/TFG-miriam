@@ -40,54 +40,46 @@ def initManzanas(shpma, manzanas):
 
 
 def initEstructuras(shpestr, manzanas, estr):
-    threshold = 0.45
+    threshold = 0.15
     global nmuros, nvacios
-    puntos, distend, segin, segen, nmuros, nvacios = (0, 0, 0, 0, 0, 0)
-    estructura, segmentos, tipos = ([] for i in range(3))
-    distinit = 10000
+    puntos, segin, segen, nmuros, nvacios = (0, 0, 0, 0, 0)
+    estructura, segmentos = ([] for i in range(2))
 
     for man in manzanas:
+        segmentos.clear()
+        estructura.clear()
+        puntos = 0
         for index, (x, y) in enumerate(zip(man['x'][:-1], man['y'][:-1])):
-            for index2, coord in enumerate(shpestr.shapeRecords()):
+            for coord in shpestr.shapeRecords():
                 for i in coord.shape.points[:]:
 
-                    dist = math.sqrt((x - i[0]) ** 2 + (y - i[1]) ** 2)
+                    dist = math.sqrt((man['x'][index] - i[0]) ** 2 + (man['y'][index] - i[1]) ** 2)
                     dist2 = math.sqrt((i[0] - man['x'][index + 1]) ** 2 + (i[1] - man['y'][index + 1]) ** 2)
-                    dist3 = math.sqrt((x - man['x'][index + 1]) ** 2 + (y - man['y'][index + 1]) ** 2)
+                    dist3 = math.sqrt((man['x'][index] - man['x'][index + 1]) ** 2 + (man['y'][index] - man['y'][index + 1]) ** 2)
 
                     if dist + dist2 - dist3 < threshold:
-                        r = shpestr.record(index2)
-                        tip = (r['tipo'])
                         part = man['acumdist'][index] + dist
                         estructura.append(part)
                         segmentos.append(index)
-                        tipos.append(tip)
                         puntos = puntos + 1
 
                         if puntos == 3:
-                            for index, (punto, segmento, tipo) in enumerate(zip(estructura, segmentos, tipos)):
-                                if distinit > punto:
-                                    distinit = punto
-                                    seginicio = segmento
-                                if distend < punto:
-                                    distend = punto
-                                    segfinal = segmento
+                            puntos = 0
+                            distinit, distend = utils.getMinMax(estructura)
+                            seginicio, segfinal = utils.getMinMax(segmentos)
 
+                            segmentos.clear()
+                            estructura.clear()
                             if shpestr == shpmu:
                                 muro = {"mzn": man['id'], "cumdinit": distinit, "cumdend": distend,
                                         "seginit": seginicio,
                                         "segend": segfinal, "tipoestr": "muro"}
                                 estr.append(muro)
                                 nmuros = nmuros + 1
+
                             elif shpestr == shpva:
                                 vacio = {"mzn": man['id'], "cumdinit": distinit, "cumdend": distend,
                                          "seginit": seginicio,
                                          "segend": segfinal, "tipoestr": "vacio"}
                                 estr.append(vacio)
                                 nvacios = nvacios + 1
-
-                            puntos = 0
-                            distinit = 10000
-                            distend = 0
-                            segmentos.clear()
-                            estructura.clear()

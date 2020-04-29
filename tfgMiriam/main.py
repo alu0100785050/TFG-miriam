@@ -19,18 +19,21 @@ VManzanas = copy.deepcopy(manzanas)
 VMuros = copy.deepcopy(muros)
 VVacios = copy.deepcopy(vacios)
 
-try:
-    for manzana in VManzanas:
-        # build.preparaEstructura(VManzanas, VMuros, manzana)
-         build.preparaEstructura(VManzanas, VVacios, manzana)
-except IndexError:
-        print(manzana)
 
+for manzana in VManzanas:
+    build.preparaEstructura(VManzanas, VMuros, manzana)
+    build.preparaEstructura(VManzanas, VVacios, manzana)
+
+for muro in VMuros:
+    print(muro)
+
+for vacio in VVacios:
+    print(vacio)
 
 # Paso 2 - Rellenar con fachadas
-# for manzana in VManzanas:
-#     build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
-    #build.generarProfundidad(fachadas, casas, manzana)
+for manzana in VManzanas:
+    build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
+    build.generarProfundidad(manzana['fachadas'], manzana['casas'], manzana)
 
 x, y = ([] for i in range(2))
 for manzana in VManzanas:

@@ -7,8 +7,8 @@ np.random.seed(458)
 
 
 def preparaEstructura(VManzanas, VEstructuras, mzn):
-    tolerancia = 5
-    count, nvect = (0, 0)
+    tolerancia = 10
+    count, nvect, insertinit, insertend = (0, 0, 0, 0)
     vectoresx, vectoresy, distpq, tipovert, vertfach = ([] for i in range(5))
     acumdist = [0]
 
@@ -22,7 +22,7 @@ def preparaEstructura(VManzanas, VEstructuras, mzn):
             sinit = estructura['seginit']
             send = estructura['segend']
 
-            distinit = linit - VManzanas[mzn['id']]['acumdist'][sinit]  # Distancia inicio muro/inicio vértice
+            distinit = linit - VManzanas[mzn['id']]['acumdist'][sinit]
             insertinit = sinit
 
             if distinit < tolerancia:
@@ -39,15 +39,15 @@ def preparaEstructura(VManzanas, VEstructuras, mzn):
                 nuevox = px + distinit * (ux / normu)
                 nuevoy = py + distinit * (uy / normu)
 
-                tmpX.insert(sinit, nuevox)
-                tmpY.insert(sinit, nuevoy)
-
-                insertinit = insertinit + 1
+                utils.insertListCoor(nuevox, insertinit-1, tmpX)
+                utils.insertListCoor(nuevoy, insertinit-1, tmpY)
 
                 if estructura['tipoestr'] == "muro":
-                    tipo.insert(insertinit, 'CM')
+                    tipo.insert(sinit+1, 'CM')
                 elif estructura['tipoestr'] == "vacio":
-                    tipo.insert(insertinit, 'CV')
+                    tipo.insert(sinit+1, 'CV')
+
+                insertinit = insertinit + 1
 
             distend = lend - VManzanas[mzn['id']]['acumdist'][send]
             insertend = send + (insertinit - sinit)
@@ -68,29 +68,29 @@ def preparaEstructura(VManzanas, VEstructuras, mzn):
                 nuevox = px + distend * (ux / normu)
                 nuevoy = py + distend * (uy / normu)
 
-                tmpX.insert(insertend, nuevox)
-                tmpY.insert(insertend, nuevoy)
-
-                insertend = insertend + 1
+                utils.insertListCoor(nuevox, insertend-1, tmpX)
+                utils.insertListCoor(nuevoy, insertend-1, tmpY)
 
                 if estructura['tipoestr'] == "muro":
-                    if tipo[send] == 'CM':
-                        tipo.insert(send + 1, 'FM')
+                    if insertend == insertinit:
+                        tipo.insert(insertend+1, 'FM')
                     else:
                         tipo.insert(insertend, 'FM')
                 elif estructura['tipoestr'] == "vacio":
-                    if tipo[send] == 'CV':
-                        tipo.insert(send + 1, 'FV')
+                    if insertend == insertinit:
+                        tipo.insert(insertend+1, 'FV')
                     else:
                         tipo.insert(insertend, 'FV')
+
+                insertend = insertend + 1
 
             tmpX.insert(0, tmpX[-1])
             tmpY.insert(0, tmpY[-1])
 
             if estructura['tipoestr'] == "muro":
-                tipo[insertinit + 1:insertend] = ['CM'] * ((insertend - 1) - insertinit)
+                tipo[insertinit+1:insertend - 1] = ['CM'] * (insertend-1 - insertinit)
             elif estructura['tipoestr'] == "vacio":
-                tipo[insertinit + 1:insertend - 1] = ['CV'] * ((insertend - 1) - insertinit)
+                tipo[insertinit+1:insertend - 1] = ['CV'] * (insertend-1 - insertinit)
 
             VManzanas[mzn['id']]['x'] = tmpX
             VManzanas[mzn['id']]['y'] = tmpY
@@ -192,7 +192,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax):
     mzn['fachadas'] = fachadas
 
 
-def generarProfundidad(fachadas, mzn):
+def generarProfundidad(fachadas, casas, mzn):
     tolerancia = 22
     casas = []
     for index, fachada in enumerate(fachadas[:-1]):

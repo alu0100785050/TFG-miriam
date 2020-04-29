@@ -12,6 +12,33 @@ amin = 28.3898 - 2 * 4.9329
 amax = 28.3898 + 2 * 4.9329
 
 
+def insertListCoor(value, pos, lis):
+    if pos == len(lis)-1:
+        lis.append(value)
+    else:
+        lis.insert(pos+1, value)
+
+
+# def insertListTipo(value, pos, lis):
+#     if pos == 0:
+#         lis.insert(pos+1, value)
+#     else:
+#         lis.insert(pos, value)
+
+
+def getMinMax(list):
+    max = 0
+    min = 10000
+
+    for item in list:
+        if item >= max:
+            max = item
+        if item <= min:
+            min = item
+
+    return min, max
+
+
 def doIntersect(polygon1, polygon2):
     if polygon1.intersects(polygon2):
         return True
