@@ -114,7 +114,7 @@ def preparaEstructura(VManzanas, VEstructuras, mzn):
 def rellenaFachadas(VManzanas, mzn, lmin, lmax):
     fachadas = []
     nsegmentos = VManzanas[mzn['id']]['nvectores']
-    nfachadas, x, y, segmento = (0, 0, 0, 0)
+    nfachadas, x, y, segmento, dp = (0, 0, 0, 0, 0)
 
     for index, segmento in enumerate(range(nsegmentos)):
         nfachadas = nfachadas + 1

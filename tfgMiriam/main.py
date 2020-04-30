@@ -34,18 +34,18 @@ for vacio in VVacios:
 for manzana in VManzanas:
     build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
     build.generarProfundidad(manzana['fachadas'], manzana['casas'], manzana)
+    print(manzana['id'], manzana['tipo'])
 
-x, y = ([] for i in range(2))
 for manzana in VManzanas:
     x, y = ([] for i in range(2))
     x = [x for x in manzana['x']]
     y = [y for y in manzana['y']]
     p.plot(x, y)
+    for casa in manzana['casas']:
+        xx, yy = ([] for i in range(2))
+        xx, yy = casa['poligono'].exterior.xy
+        p.plot(xx, yy)
 
-# for index, casa in enumerate(casas):
-#     x, y = casa['poligono'].exterior.xy
-#     p.plot(x, y)
-#
 p.show()
 
 # Problemas con 11, 19, 22, 24, 29, 31

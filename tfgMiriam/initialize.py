@@ -2,10 +2,9 @@ import math
 import utils
 import shapefile
 
-
-shpma = shapefile.Reader("../shapefilestotal/manzana")
-shpva = shapefile.Reader("../shapefilestotal/void")
-shpmu = shapefile.Reader("../shapefilestotal/wall")
+shpma = shapefile.Reader("../shapefilestotal/manzana.shp")
+shpva = shapefile.Reader("../shapefilestotal/void.shp")
+shpmu = shapefile.Reader("../shapefilestotal/wall.shp")
 
 
 def initManzanas(shpma, manzanas):
@@ -40,7 +39,7 @@ def initManzanas(shpma, manzanas):
 
 
 def initEstructuras(shpestr, manzanas, estr):
-    threshold = 0.15
+    threshold = 0.35
     global nmuros, nvacios
     puntos, segin, segen, nmuros, nvacios = (0, 0, 0, 0, 0)
     estructura, segmentos = ([] for i in range(2))
@@ -57,7 +56,7 @@ def initEstructuras(shpestr, manzanas, estr):
                     dist2 = math.sqrt((i[0] - man['x'][index + 1]) ** 2 + (i[1] - man['y'][index + 1]) ** 2)
                     dist3 = math.sqrt((man['x'][index] - man['x'][index + 1]) ** 2 + (man['y'][index] - man['y'][index + 1]) ** 2)
 
-                    if dist + dist2 - dist3 < threshold:
+                    if dist + dist2 - dist3 <= threshold:
                         part = man['acumdist'][index] + dist
                         estructura.append(part)
                         segmentos.append(index)

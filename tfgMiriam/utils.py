@@ -19,13 +19,6 @@ def insertListCoor(value, pos, lis):
         lis.insert(pos+1, value)
 
 
-# def insertListTipo(value, pos, lis):
-#     if pos == 0:
-#         lis.insert(pos+1, value)
-#     else:
-#         lis.insert(pos, value)
-
-
 def getMinMax(list):
     max = 0
     min = 10000
