@@ -24,29 +24,25 @@ for manzana in VManzanas:
     build.preparaEstructura(VManzanas, VMuros, manzana)
     build.preparaEstructura(VManzanas, VVacios, manzana)
 
-for muro in VMuros:
-    print(muro)
-
-for vacio in VVacios:
-    print(vacio)
 
 # Paso 2 - Rellenar con fachadas
 for manzana in VManzanas:
     build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
-    build.generarProfundidad(manzana['fachadas'], manzana['casas'], manzana)
-    print(manzana['id'], manzana['tipo'])
+    build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
 
-for manzana in VManzanas:
-    x, y = ([] for i in range(2))
-    x = [x for x in manzana['x']]
-    y = [y for y in manzana['y']]
-    p.plot(x, y)
-    for casa in manzana['casas']:
-        xx, yy = ([] for i in range(2))
-        xx, yy = casa['poligono'].exterior.xy
-        p.plot(xx, yy)
+utils.generateOBJ(VManzanas[0])
 
-p.show()
+# for manzana in VManzanas:
+#     x, y = ([] for i in range(2))
+#     x = [x for x in manzana['x']]
+#     y = [y for y in manzana['y']]
+#     p.plot(x, y)
+#     for casa in manzana['casas']:
+#         xx, yy = ([] for i in range(2))
+#         xx, yy = casa['poligono'].exterior.xy
+#         p.plot(xx, yy)
+#
+# p.show()
 
 # Problemas con 11, 19, 22, 24, 29, 31
 

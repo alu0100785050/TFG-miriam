@@ -39,7 +39,7 @@ def initManzanas(shpma, manzanas):
 
 
 def initEstructuras(shpestr, manzanas, estr):
-    threshold = 0.35
+    threshold = 0.85
     global nmuros, nvacios
     puntos, segin, segen, nmuros, nvacios = (0, 0, 0, 0, 0)
     estructura, segmentos = ([] for i in range(2))

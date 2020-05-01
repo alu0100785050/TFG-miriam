@@ -134,7 +134,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax):
                 yy = VManzanas[mzn['id']]['y'][segmento] + vy
                 tipo = VManzanas[mzn['id']]['tipo'][segmento]
                 cdp = cdp + di
-                print("No se puede construir una fachada más pequeña que el mínimo establecido")
+                print("No se puede construir una fachada más pequeña que el mínimo establecido en la manzana " + str(mzn['id']))
 
                 fachada = {"x": xx, "y": yy, "long": di, "seg": segmento, "mzn": mzn['id'], "tipo": tipo, "esquina": False}
                 fachadas.insert(nfachadas, fachada)
@@ -192,7 +192,7 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax):
     mzn['fachadas'] = fachadas
 
 
-def generarProfundidad(fachadas, casas, mzn):
+def construirCasas(fachadas, casas, mzn):
     tolerancia = 22
     casas = []
     for index, fachada in enumerate(fachadas[:-1]):
@@ -240,7 +240,10 @@ def generarProfundidad(fachadas, casas, mzn):
                          (fachadas[index + 1]['x'], fachadas[index + 1]['y']), (xx2, yy2), (puntoesquina[0], puntoesquina[1]),
                          (xx, yy)])
 
-                    casa = {"mzn": mzn['id'], "longitudcasa": lcas, "profundidadcasa": pcas,
+                    acas = np.random.normal(28.3898, 4.9329)
+                    utils.ajustarAltura(acas, utils.amax, utils.amin)
+
+                    casa = {"mzn": mzn['id'], "longitudcasa": lcas, "profundidadcasa": pcas, "alturacasa": acas,
                             "xfachada1": fachadas[index - 1]['x'],
                             "yfachada1": fachadas[index - 1]['y'], "xfachada2": fachadas[index]['x'],
                             "yfachada2": fachadas[index]['y'],
@@ -274,7 +277,10 @@ def generarProfundidad(fachadas, casas, mzn):
                          (fachadas[index + 1]['x'], fachadas[index + 1]['y']),
                          (xx2, yy2), (xx, yy)])
 
-                    casa = {"mzn": mzn['id'], "longitudcasa": fachadas[index]['long'], "profundidadcasa": pcas,
+                    acas = np.random.normal(28.3898, 4.9329)
+                    utils.ajustarAltura(acas, utils.amax, utils.amin)
+
+                    casa = {"mzn": mzn['id'], "longitudcasa": fachadas[index]['long'], "profundidadcasa": pcas, 'alturacasa': acas,
                             "xfachada1": fachadas[index]['x'], "yfachada1": fachadas[index]['y'],
                             "xfachada2": fachadas[index+1]['x'], "yfachada2": fachadas[index+1]['y'],
                             "x1": xx, "y1": yy, "x2": xx2, "y2": yy2, "poligono": polygon}

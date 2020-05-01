@@ -77,3 +77,36 @@ def intersect(x0a, y0a, dxa, dya, x0b, y0b, dxb, dyb):
     t = (dyb*(x0b-x0a)-dxb*(y0b-y0a)) / (dxa*dyb-dxb*dya)
 
     return [x0a+dxa*t, y0a+dya*t]
+
+
+def generateOBJ(manzana):
+    f = open("pruebaobj.obj", "a")
+
+    for casa in manzana['casas']:
+        f.write('o Cube \n')
+        x, y = ([] for i in range(2))
+        x, y = casa['poligono'].exterior.xy
+
+        for xx, yy in zip(x[:-1], y[:-1]):
+            f.write('v' + str(' '))
+            f.write(str(xx) + str(' '))
+            f.write(str(yy) + str(' '))
+            f.write(str('0'))
+            f.write('\n')
+
+        for xx, yy in zip(x[:-1], y[:-1]):
+            f.write('v' + str(' '))
+            f.write(str(xx) + str(' '))
+            f.write(str(yy) + str(' '))
+            f.write(str(casa['alturacasa']))
+            f.write('\n')
+
+        if len(x)-1 == 4:
+            f.write('f 1 2 3 4 \n')
+            f.write('f 1 3 5 7 \n')
+            f.write('f 2 4 6 8 \n')
+            f.write('f 1 2 5 6 \n')
+            f.write('f 3 4 7 8 \n')
+            f.write('f 5 6 7 8 \n')
+
+    f.close()
