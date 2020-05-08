@@ -2,7 +2,6 @@ from matplotlib import pyplot as p
 from shapely.ops import cascaded_union
 import numpy as np
 
-
 global lmin, lmax, pmin, pmax, amin, amax
 lmin = 45.0207 - 2 * 10.2515
 lmax = 45.0207 + 2 * 10.2515
@@ -13,10 +12,10 @@ amax = 28.3898 + 2 * 4.9329
 
 
 def insertListCoor(value, pos, lis):
-    if pos == len(lis)-1:
+    if pos == len(lis) - 1:
         lis.append(value)
     else:
-        lis.insert(pos+1, value)
+        lis.insert(pos + 1, value)
 
 
 def getMinMax(list):
@@ -74,39 +73,67 @@ def ajustarAltura(acasa, amax, amin):
 
 
 def intersect(x0a, y0a, dxa, dya, x0b, y0b, dxb, dyb):
-    t = (dyb*(x0b-x0a)-dxb*(y0b-y0a)) / (dxa*dyb-dxb*dya)
+    t = (dyb * (x0b - x0a) - dxb * (y0b - y0a)) / (dxa * dyb - dxb * dya)
 
-    return [x0a+dxa*t, y0a+dya*t]
+    return [x0a + dxa * t, y0a + dya * t]
 
 
-def generateOBJ(manzana):
+def generateOBJ(manzanas):
     f = open("pruebaobj.obj", "a")
+    ncube = 0
+    vertotales = 0
 
-    for casa in manzana['casas']:
-        f.write('o Cube \n')
-        x, y = ([] for i in range(2))
-        x, y = casa['poligono'].exterior.xy
+    for manzana in manzanas:
+        for casa in manzana['casas']:
+            f.write('o Cube' + str(ncube) + '\n')
+            ncube = ncube + 1
 
-        for xx, yy in zip(x[:-1], y[:-1]):
-            f.write('v' + str(' '))
-            f.write(str(xx) + str(' '))
-            f.write(str(yy) + str(' '))
-            f.write(str('0'))
-            f.write('\n')
+            x, y = casa['poligono'].exterior.xy
 
-        for xx, yy in zip(x[:-1], y[:-1]):
-            f.write('v' + str(' '))
-            f.write(str(xx) + str(' '))
-            f.write(str(yy) + str(' '))
-            f.write(str(casa['alturacasa']))
-            f.write('\n')
+            for xx, yy in zip(x[:-1], y[:-1]):
+                f.write('v' + str(' '))
+                f.write(str(xx) + str(' '))
+                f.write(str(yy) + str(' '))
+                f.write(str('0'))
+                f.write('\n')
 
-        if len(x)-1 == 4:
-            f.write('f 1 2 3 4 \n')
-            f.write('f 1 3 5 7 \n')
-            f.write('f 2 4 6 8 \n')
-            f.write('f 1 2 5 6 \n')
-            f.write('f 3 4 7 8 \n')
-            f.write('f 5 6 7 8 \n')
+            for xx, yy in zip(x[:-1], y[:-1]):
+                f.write('v' + str(' '))
+                f.write(str(xx) + str(' '))
+                f.write(str(yy) + str(' '))
+                f.write(str(casa['alturacasa']))
+                f.write('\n')
+
+            nvert = len(x) - 1
+
+            if nvert == 4:
+                vertotales = vertotales + 8
+                f.write('f ' + str(vertotales - 7) + ' ' + str(vertotales - 6) + ' ' +
+                        str(vertotales - 5) + ' ' + str(vertotales - 4) + '\n')
+                f.write('f ' + str(vertotales - 3) + ' ' + str(vertotales - 2) + ' ' +
+                        str(vertotales - 1) + ' ' + str(vertotales) + '\n')
+
+                for index in range(3):
+                    f.write('f ' + str(vertotales - 7 + index) + ' ' + str(vertotales - 6 + index) + ' ' + str(
+                        vertotales - 2 + index) + ' ' + str(vertotales - 3 + index) + '\n')
+
+                f.write('f ' + str(vertotales - 4) + ' ' + str(vertotales - 7) + ' ' + str(vertotales - 3) + ' ' +
+                        str(vertotales) + '\n')
+
+            if nvert == 6:
+                vertotales = vertotales + 12
+                f.write('f ' + str(vertotales - 11) + ' ' + str(vertotales - 10) + ' ' +
+                            str(vertotales - 9) + ' ' + str(vertotales - 8) + ' ' +
+                            str(vertotales - 7) + ' ' + str(vertotales - 6) + '\n')
+                f.write('f ' + str(vertotales - 5) + ' ' + str(vertotales - 4) + ' ' +
+                        str(vertotales - 3) + ' ' + str(vertotales - 2) + ' ' +
+                        str(vertotales - 1) + ' ' + str(vertotales) + '\n')
+
+                for index in range(5):
+                    f.write('f ' + str(vertotales - 11 + index) + ' ' + str(vertotales - 10 + index) + ' ' +
+                                str(vertotales - 4 + index) + ' ' + str(vertotales - 5 + index) + '\n')
+
+                f.write('f ' + str(vertotales - 6) + ' ' + str(vertotales - 11) + ' ' + str(vertotales - 5) + ' ' +
+                        str(vertotales) + '\n')
 
     f.close()

@@ -30,7 +30,7 @@ for manzana in VManzanas:
     build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
     build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
 
-utils.generateOBJ(VManzanas[0])
+utils.generateOBJ(VManzanas)
 
 # for manzana in VManzanas:
 #     x, y = ([] for i in range(2))
