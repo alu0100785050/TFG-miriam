@@ -1,0 +1,9 @@
+#  Produced by Matlab Write Wobj exporter 
+# 
+newmtl orto
+Ka 0.20000 0.20000 0.20000
+Kd 0.00392 0.00392 0.00392
+Ks 1.00000 1.00000 1.00000
+map_Kd torrianibigclean.jpg 
+# 
+#  EOF
