@@ -1,5 +1,7 @@
 from matplotlib import pyplot as p
+import imageio
 from shapely.ops import cascaded_union
+import statistics
 import numpy as np
 
 global lmin, lmax, pmin, pmax, amin, amax
@@ -104,16 +106,16 @@ def generateOBJmanzanas(manzanas):
 
             for xx, yy in zip(x[:-1], y[:-1]):
                 f.write('v' + str(' '))
-                f.write(str(xx) + str(' '))
-                f.write(str(yy) + str(' '))
-                f.write(str('0'))
+                f.write(str(xx*2.2119) + str(' '))
+                f.write(str(yy*2.2119) + str(' '))
+                f.write(str(casa['alturaterreno']) )
                 f.write('\n')
 
             for xx, yy in zip(x[:-1], y[:-1]):
                 f.write('v' + str(' '))
-                f.write(str(xx) + str(' '))
-                f.write(str(yy) + str(' '))
-                f.write(str(casa['alturacasa']))
+                f.write(str(xx*2.2119) + str(' '))
+                f.write(str(yy*2.2119) + str(' '))
+                f.write(str(casa['alturacasa'] + casa['alturaterreno']))
                 f.write('\n')
 
             nvert = len(x) - 1
@@ -226,5 +228,24 @@ def descartarManzanasVariasEstructuras(manzanas, muros, vacios):
                     manzanasComplejas.append(muro['mzn'])
 
     return manzanasTotal, manzanasSencillas, manzanasComplejas
+
+
+def extraerInformacionPNG(imagen, manzanas):
+
+    zs = []
+    alturas = imageio.imread(imagen)
+
+    for manzana in manzanas:
+        for casa in manzana['casas']:
+            xx, yy = casa['poligono'].exterior.xy
+            zs.clear()
+
+            for x, y in zip(xx, yy):
+                z = alturas[round(-y)+1, round(x)+1]
+                zs.append(z)
+
+            zmean = statistics.mean(zs)
+            casa['alturaterreno'] = zmean
+
 
 

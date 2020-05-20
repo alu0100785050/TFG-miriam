@@ -33,10 +33,12 @@ for manzana in VManzanas:
     if manzana['id'] not in mancom:
         build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
         build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
+#
+# build.profundidadMuros(VMuros, VManzanas, mancom)
 
-build.profundidadMuros(VMuros, VManzanas, mancom)
+utils.extraerInformacionPNG('../alturascasas/mdttorrianicorrected.png', VManzanas)
 
-# utils.generateOBJmanzanas(VManzanas)
+utils.generateOBJmanzanas(VManzanas)
 # utils.generateOBJmuros(VMuros, mancom)
 
 # for manzana in VManzanas:
