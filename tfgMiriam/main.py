@@ -3,6 +3,7 @@ import copy
 import initialize
 import build
 import utils
+import pprint
 
 
 manzanas, muros, vacios = ([] for i in range(3))
@@ -19,18 +20,24 @@ VManzanas = copy.deepcopy(manzanas)
 VMuros = copy.deepcopy(muros)
 VVacios = copy.deepcopy(vacios)
 
+mantot, mansen, mancom = utils.descartarManzanasVariasEstructuras(VManzanas, VMuros, VVacios)
 
 for manzana in VManzanas:
-    build.preparaEstructura(VManzanas, VMuros, manzana)
-    build.preparaEstructura(VManzanas, VVacios, manzana)
+    if manzana['id'] not in mancom:
+        build.preparaEstructura(VManzanas, VMuros, manzana)
+        build.preparaEstructura(VManzanas, VVacios, manzana)
 
 
 # Paso 2 - Rellenar con fachadas
 for manzana in VManzanas:
-    build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
-    build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
+    if manzana['id'] not in mancom:
+        build.rellenaFachadas(VManzanas, manzana, utils.lmin, utils.lmax)
+        build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
 
-utils.generateOBJ(VManzanas)
+build.profundidadMuros(VMuros, VManzanas, mancom)
+
+# utils.generateOBJmanzanas(VManzanas)
+# utils.generateOBJmuros(VMuros, mancom)
 
 # for manzana in VManzanas:
 #     x, y = ([] for i in range(2))
@@ -44,6 +51,6 @@ utils.generateOBJ(VManzanas)
 #
 # p.show()
 
-# Problemas con 11, 19, 22, 24, 29, 31
+# Manzana 67 y 79 eliminadas
 
 

@@ -78,8 +78,20 @@ def intersect(x0a, y0a, dxa, dya, x0b, y0b, dxb, dyb):
     return [x0a + dxa * t, y0a + dya * t]
 
 
-def generateOBJ(manzanas):
-    f = open("pruebaobj.obj", "a")
+def getSegmentosMuro(manzanas, muro):
+    listasegm = []
+
+    for manzana in manzanas:
+        if manzana['id'] == muro['mzn']:
+            for index, tipo in enumerate(manzana['tipo']):
+                if tipo is "CM":
+                    listasegm.append(index)
+
+    return listasegm
+
+
+def generateOBJmanzanas(manzanas):
+    f = open("manzanas.obj", "a")
     ncube = 0
     vertotales = 0
 
@@ -123,17 +135,96 @@ def generateOBJ(manzanas):
             if nvert == 6:
                 vertotales = vertotales + 12
                 f.write('f ' + str(vertotales - 11) + ' ' + str(vertotales - 10) + ' ' +
-                            str(vertotales - 9) + ' ' + str(vertotales - 8) + ' ' +
-                            str(vertotales - 7) + ' ' + str(vertotales - 6) + '\n')
+                        str(vertotales - 9) + ' ' + str(vertotales - 8) + ' ' +
+                        str(vertotales - 7) + ' ' + str(vertotales - 6) + '\n')
                 f.write('f ' + str(vertotales - 5) + ' ' + str(vertotales - 4) + ' ' +
                         str(vertotales - 3) + ' ' + str(vertotales - 2) + ' ' +
                         str(vertotales - 1) + ' ' + str(vertotales) + '\n')
 
                 for index in range(5):
                     f.write('f ' + str(vertotales - 11 + index) + ' ' + str(vertotales - 10 + index) + ' ' +
-                                str(vertotales - 4 + index) + ' ' + str(vertotales - 5 + index) + '\n')
+                            str(vertotales - 4 + index) + ' ' + str(vertotales - 5 + index) + '\n')
 
                 f.write('f ' + str(vertotales - 6) + ' ' + str(vertotales - 11) + ' ' + str(vertotales - 5) + ' ' +
                         str(vertotales) + '\n')
 
     f.close()
+
+
+def generateOBJmuros(muros, manoaptas):
+    f = open("muros.obj", "a")
+    ncube = 0
+    vertotales = 0
+
+    for muro in muros:
+        if muro['mzn'] not in manoaptas:
+            numvert = 0
+            f.write('o Cube' + str(ncube) + '\n')
+            ncube = ncube + 1
+
+            for x, y in zip(muro['x'], muro['y']):
+                numvert = numvert + 1
+                f.write('v' + str(' '))
+                f.write(str(x) + str(' '))
+                f.write(str(y) + str(' '))
+                f.write(str('0'))
+                f.write('\n')
+                vertotales = vertotales + 1
+
+            for x, y in zip(muro['x'], muro['y']):
+                f.write('v' + str(' '))
+                f.write(str(x) + str(' '))
+                f.write(str(y) + str(' '))
+                f.write(str(15))
+                f.write('\n')
+                vertotales = vertotales + 1
+
+            f.write('f ')
+            for vert in range(vertotales-(numvert*2), vertotales - numvert, 1):
+                f.write(str(vert+1) + str(' '))
+            f.write(str('\n'))
+
+            f.write('f ')
+            for vert in range(vertotales-numvert, vertotales, 1):
+                f.write(str(vert+1) + str(' '))
+            f.write(str('\n'))
+
+            for vert in range(numvert-1):
+                f.write('f ')
+                f.write(str(vertotales - numvert*2 + vert+1) + str(' ') + str(vertotales - numvert*2 + vert+2) + str(' '))
+                f.write(str(vertotales - numvert + vert+2) + str(' ') + str(vertotales - numvert + vert + 1))
+                f.write(str('\n'))
+
+            f.write('f ' + str(vertotales - numvert*2 + 1) + str(' ') + str(vertotales-numvert) + str(' ') +
+                    str(vertotales) + str(' ') + str(vertotales-numvert+1))
+            f.write(str('\n'))
+
+            f.write('f ' + str(vertotales - numvert - (numvert//2) + 1) + str(' ') + str(vertotales - numvert - (numvert//2)) + str(' ') +
+                    str(vertotales - numvert + numvert//2) + str(' ') + str(vertotales - numvert + numvert//2 + 1))
+            f.write(str('\n'))
+
+    f.close()
+
+
+def descartarManzanasVariasEstructuras(manzanas, muros, vacios):
+    manzanasSencillas = []
+    manzanasTotal = []
+    manzanasComplejas = []
+
+    for manzana in manzanas:
+        manzanasTotal.append(manzana['id'])
+
+    for muro in muros:
+        if muro['mzn'] not in manzanasSencillas:
+            manzanasSencillas.append(muro['mzn'])
+        else:
+            manzanasComplejas.append(muro['mzn'])
+
+        for vacio in vacios:
+            if vacio['mzn'] == muro['mzn']:
+                if muro['mzn'] not in manzanasComplejas:
+                    manzanasComplejas.append(muro['mzn'])
+
+    return manzanasTotal, manzanasSencillas, manzanasComplejas
+
+

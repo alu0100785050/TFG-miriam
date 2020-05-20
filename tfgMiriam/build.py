@@ -1,7 +1,7 @@
 import utils
 import numpy as np
 import math
-from shapely.geometry.polygon import LinearRing, Polygon
+from shapely.geometry.polygon import Polygon
 
 np.random.seed(458)
 
@@ -193,7 +193,6 @@ def rellenaFachadas(VManzanas, mzn, lmin, lmax):
 
 
 def construirCasas(fachadas, casas, mzn):
-    tolerancia = 22
     casas = []
     for index, fachada in enumerate(fachadas[:-1]):
 
@@ -203,12 +202,6 @@ def construirCasas(fachadas, casas, mzn):
                     pcas = np.random.normal(18.1218, 3.1631)
                     utils.ajustarProfundidad(pcas, utils.pmax, utils.pmin)
                     lcas = fachadas[index - 1]['long'] + fachadas[index]['long']
-
-                    # if (math.fabs(fachadas[index - 1]['long'] - fachadas[index]['long'])) < tolerancia:
-                    #     pcas = utils.pmin
-
-                    # if fachadas[index - 2]['seg'] != fachadas[index - 1]['seg'] != fachadas[index]['seg']:
-                    #     pcas = utils.pmin
 
                     xvector = mzn['dX'][fachadas[index - 1]['seg']]
                     yvector = mzn['dY'][fachadas[index - 1]['seg']]
@@ -288,3 +281,85 @@ def construirCasas(fachadas, casas, mzn):
                     casas.insert(index, casa)
 
     mzn['casas'] = casas
+
+
+def profundidadMuros(muros, manzanas, mancom):
+    listy = []
+    listx = []
+
+    for muro in muros:
+
+        listy.clear()
+        listx.clear()
+        if muro['mzn'] not in mancom:
+            for manzana in manzanas:
+                 if muro['mzn'] == manzana['id']:
+                    for index, tipo in enumerate(manzana['tipo']):
+                        if tipo is 'CM':
+                            muro['x'].append(manzana['x'][index])
+                            muro['y'].append(manzana['y'][index])
+
+                        if tipo is 'FM' and manzana['tipo'][index-1] is 'CM':
+                            muro['x'].append(manzana['x'][index])
+                            muro['y'].append(manzana['y'][index])
+
+            seg = utils.getSegmentosMuro(manzanas, muro)
+            for index, element in reversed(list(enumerate(muro['x']))):
+
+                if index == len(muro['x'])-1:
+                    xvector = manzanas[muro['mzn']]['dX'][seg[-1]]
+                    yvector = manzanas[muro['mzn']]['dY'][seg[-1]]
+                    perp = [yvector, -xvector]
+                    mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
+
+                    vx = np.divide(perp[0], mod) * 12
+                    vy = np.divide(perp[1], mod) * 12
+                    xx = muro['x'][index] + vx
+                    yy = muro['y'][index] + vy
+
+                    muro['x'].append(xx)
+                    muro['y'].append(yy)
+
+                elif index == 0:
+                    xvector = manzanas[muro['mzn']]['dX'][seg[0]]
+                    yvector = manzanas[muro['mzn']]['dY'][seg[0]]
+                    perp = [yvector, -xvector]
+                    mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
+
+                    vx = np.divide(perp[0], mod) * 12
+                    vy = np.divide(perp[1], mod) * 12
+                    xx = muro['x'][index] + vx
+                    yy = muro['y'][index] + vy
+
+                    muro['x'].append(xx)
+                    muro['y'].append(yy)
+
+                else:
+                    xvector = manzanas[muro['mzn']]['dX'][seg[index-1]]
+                    yvector = manzanas[muro['mzn']]['dY'][seg[index-1]]
+                    perp = [yvector, -xvector]
+                    mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
+
+                    vx = np.divide(perp[0], mod) * 12
+                    vy = np.divide(perp[1], mod) * 12
+                    xx = muro['x'][index - 1] + vx
+                    yy = muro['y'][index - 1] + vy
+
+                    xvector2 = manzanas[muro['mzn']]['dX'][seg[index]]
+                    yvector2 = manzanas[muro['mzn']]['dY'][seg[index]]
+                    perp2 = [yvector2, -xvector2]
+                    mod2 = math.sqrt(perp2[1] ** 2 + perp2[0] ** 2)
+                    vx2 = np.divide(perp2[0], mod2) * 12
+                    vy2 = np.divide(perp2[1], mod2) * 12
+                    xx2 = muro['x'][index + 1] + vx2
+                    yy2 = muro['y'][index + 1] + vy2
+
+                    dx1 = manzanas[muro['mzn']]['dX'][seg[index-1]]
+                    dy1 = manzanas[muro['mzn']]['dY'][seg[index-1]]
+                    dx2 = manzanas[muro['mzn']]['dX'][seg[index]]
+                    dy2 = manzanas[muro['mzn']]['dY'][seg[index]]
+
+                    puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
+
+                    muro['x'].append(puntoesquina[0])
+                    muro['y'].append(puntoesquina[1])

@@ -72,7 +72,8 @@ def initEstructuras(shpestr, manzanas, estr):
                             if shpestr == shpmu:
                                 muro = {"mzn": man['id'], "cumdinit": distinit, "cumdend": distend,
                                         "seginit": seginicio,
-                                        "segend": segfinal, "tipoestr": "muro"}
+                                        "segend": segfinal, "tipoestr": "muro", 'x': [], 'y': [],
+                                        "dX": [], "dY": []}
                                 estr.append(muro)
                                 nmuros = nmuros + 1
 
