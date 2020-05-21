@@ -106,15 +106,15 @@ def generateOBJmanzanas(manzanas):
 
             for xx, yy in zip(x[:-1], y[:-1]):
                 f.write('v' + str(' '))
-                f.write(str(xx*2.2119) + str(' '))
-                f.write(str(yy*2.2119) + str(' '))
+                f.write(str(xx/2.2119) + str(' '))
+                f.write(str(yy/2.2119) + str(' '))
                 f.write(str(casa['alturaterreno']) )
                 f.write('\n')
 
             for xx, yy in zip(x[:-1], y[:-1]):
                 f.write('v' + str(' '))
-                f.write(str(xx*2.2119) + str(' '))
-                f.write(str(yy*2.2119) + str(' '))
+                f.write(str(xx/2.2119) + str(' '))
+                f.write(str(yy/2.2119) + str(' '))
                 f.write(str(casa['alturacasa'] + casa['alturaterreno']))
                 f.write('\n')
 
@@ -245,7 +245,7 @@ def extraerInformacionPNG(imagen, manzanas):
                 zs.append(z)
 
             zmean = statistics.mean(zs)
-            casa['alturaterreno'] = zmean
+            casa['alturaterreno'] = zmean/2
 
 
 
