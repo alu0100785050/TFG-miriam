@@ -216,16 +216,16 @@ def descartarManzanasVariasEstructuras(manzanas, muros, vacios):
     for manzana in manzanas:
         manzanasTotal.append(manzana['id'])
 
-    for muro in muros:
-        if muro['mzn'] not in manzanasSencillas:
-            manzanasSencillas.append(muro['mzn'])
+    for key, muro in muros.items():
+        if key not in manzanasSencillas:
+            manzanasSencillas.append(key)
         else:
-            manzanasComplejas.append(muro['mzn'])
+            manzanasComplejas.append(key)
 
-        for vacio in vacios:
-            if vacio['mzn'] == muro['mzn']:
-                if muro['mzn'] not in manzanasComplejas:
-                    manzanasComplejas.append(muro['mzn'])
+        for key2, vacio in vacios.items():
+            if key2 == key:
+                if key not in manzanasComplejas:
+                    manzanasComplejas.append(key)
 
     return manzanasTotal, manzanasSencillas, manzanasComplejas
 
@@ -248,4 +248,6 @@ def extraerInformacionPNG(imagen, manzanas):
             casa['alturaterreno'] = zmean/2
 
 
+def elementosIguales(elementos):
+    return all(x == elementos[0] for x in elementos)
 
