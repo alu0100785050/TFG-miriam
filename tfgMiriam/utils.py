@@ -1,8 +1,10 @@
+import math
+
 from matplotlib import pyplot as p
 import imageio
 from shapely.ops import cascaded_union
 import statistics
-import numpy as np
+from collections import defaultdict
 
 global lmin, lmax, pmin, pmax, amin, amax
 lmin = 45.0207 - 2 * 10.2515
@@ -84,7 +86,7 @@ def getSegmentosMuro(manzanas, muro):
     listasegm = []
 
     for manzana in manzanas:
-        if manzana['id'] == muro['mzn']:
+        if manzana['id'] == muro:
             for index, tipo in enumerate(manzana['tipo']):
                 if tipo is "CM":
                     listasegm.append(index)
@@ -106,15 +108,15 @@ def generateOBJmanzanas(manzanas):
 
             for xx, yy in zip(x[:-1], y[:-1]):
                 f.write('v' + str(' '))
-                f.write(str(xx/2.2119) + str(' '))
-                f.write(str(yy/2.2119) + str(' '))
-                f.write(str(casa['alturaterreno']) )
+                f.write(str(xx / 2.2119) + str(' '))
+                f.write(str(yy / 2.2119) + str(' '))
+                f.write(str(casa['alturaterreno']))
                 f.write('\n')
 
             for xx, yy in zip(x[:-1], y[:-1]):
                 f.write('v' + str(' '))
-                f.write(str(xx/2.2119) + str(' '))
-                f.write(str(yy/2.2119) + str(' '))
+                f.write(str(xx / 2.2119) + str(' '))
+                f.write(str(yy / 2.2119) + str(' '))
                 f.write(str(casa['alturacasa'] + casa['alturaterreno']))
                 f.write('\n')
 
@@ -182,27 +184,29 @@ def generateOBJmuros(muros, manoaptas):
                 vertotales = vertotales + 1
 
             f.write('f ')
-            for vert in range(vertotales-(numvert*2), vertotales - numvert, 1):
-                f.write(str(vert+1) + str(' '))
+            for vert in range(vertotales - (numvert * 2), vertotales - numvert, 1):
+                f.write(str(vert + 1) + str(' '))
             f.write(str('\n'))
 
             f.write('f ')
-            for vert in range(vertotales-numvert, vertotales, 1):
-                f.write(str(vert+1) + str(' '))
+            for vert in range(vertotales - numvert, vertotales, 1):
+                f.write(str(vert + 1) + str(' '))
             f.write(str('\n'))
 
-            for vert in range(numvert-1):
+            for vert in range(numvert - 1):
                 f.write('f ')
-                f.write(str(vertotales - numvert*2 + vert+1) + str(' ') + str(vertotales - numvert*2 + vert+2) + str(' '))
-                f.write(str(vertotales - numvert + vert+2) + str(' ') + str(vertotales - numvert + vert + 1))
+                f.write(str(vertotales - numvert * 2 + vert + 1) + str(' ') + str(
+                    vertotales - numvert * 2 + vert + 2) + str(' '))
+                f.write(str(vertotales - numvert + vert + 2) + str(' ') + str(vertotales - numvert + vert + 1))
                 f.write(str('\n'))
 
-            f.write('f ' + str(vertotales - numvert*2 + 1) + str(' ') + str(vertotales-numvert) + str(' ') +
-                    str(vertotales) + str(' ') + str(vertotales-numvert+1))
+            f.write('f ' + str(vertotales - numvert * 2 + 1) + str(' ') + str(vertotales - numvert) + str(' ') +
+                    str(vertotales) + str(' ') + str(vertotales - numvert + 1))
             f.write(str('\n'))
 
-            f.write('f ' + str(vertotales - numvert - (numvert//2) + 1) + str(' ') + str(vertotales - numvert - (numvert//2)) + str(' ') +
-                    str(vertotales - numvert + numvert//2) + str(' ') + str(vertotales - numvert + numvert//2 + 1))
+            f.write('f ' + str(vertotales - numvert - (numvert // 2) + 1) + str(' ') + str(
+                vertotales - numvert - (numvert // 2)) + str(' ') +
+                    str(vertotales - numvert + numvert // 2) + str(' ') + str(vertotales - numvert + numvert // 2 + 1))
             f.write(str('\n'))
 
     f.close()
@@ -231,7 +235,6 @@ def descartarManzanasVariasEstructuras(manzanas, muros, vacios):
 
 
 def extraerInformacionPNG(imagen, manzanas):
-
     zs = []
     alturas = imageio.imread(imagen)
 
@@ -241,13 +244,52 @@ def extraerInformacionPNG(imagen, manzanas):
             zs.clear()
 
             for x, y in zip(xx, yy):
-                z = alturas[round(-y)+1, round(x)+1]
+                z = alturas[round(-y) + 1, round(x) + 1]
                 zs.append(z)
 
             zmean = statistics.mean(zs)
-            casa['alturaterreno'] = zmean/2
+            casa['alturaterreno'] = zmean / 2
 
 
 def elementosIguales(elementos):
     return all(x == elementos[0] for x in elementos)
 
+
+def listarDuplicados(seq):
+    tally = defaultdict(list)
+    for num, item in enumerate(seq):
+        for num2, item2 in enumerate(seq[num+1:], num+1):
+            if abs(item - item2) <= 2:
+                tally[int(item)].append(num)
+                tally[int(item)].append(num2)
+    return tally
+
+
+def eliminarPuntosDuplicados(estructura):
+    runned = []
+
+    for key, item in estructura.items():
+        dup = listarDuplicados(item['acumdist'])
+        incremento = 0
+        runned.append(key)
+
+        for key, pos in dup.items():
+            if len(pos) >= 2:
+                if int(item['distsegpunto'][pos[0]-incremento]) > 2 and int(item['distsegpunto'][pos[1]-incremento]) < 2:
+                    item['acumdist'].pop(pos[0]-incremento)
+                    item['x'].pop(pos[0]-incremento)
+                    item['y'].pop(pos[0]-incremento)
+                    item['distsegpunto'].pop(pos[0]-incremento)
+                    item['seg'].pop(pos[0]-incremento)
+                    item['orden'].pop(pos[0]-incremento)
+                else:
+                    item['acumdist'].pop(pos[1]-incremento)
+                    item['x'].pop(pos[1]-incremento)
+                    item['y'].pop(pos[1]-incremento)
+                    item['distsegpunto'].pop(pos[1]-incremento)
+                    item['seg'].pop(pos[1]-incremento)
+                    item['orden'].pop(pos[1]-incremento)
+
+                incremento = incremento + 1
+
+    return estructura

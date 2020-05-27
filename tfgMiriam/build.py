@@ -8,44 +8,70 @@ np.random.seed(458)
 
 def reordenarEstructuras(estructura):
     for key, value in estructura.items():
-        if not utils.elementosIguales(value['seg']):
-            if value['orden'] == [1, 1, 0]:
-                if value['distsegpunto'][0] > value['distsegpunto'][1]:
-                    value['orden'][1], value['orden'][2] = \
-                        value['orden'][2], value['orden'][1]
+        if value['orden'] == [1, 1, 0]:
+            if value['acumdist'][2] > value['acumdist'][1] > value['acumdist'][0]:
+                value['orden'][0], value['orden'][1], value['orden'][2] = \
+                    value['orden'][1], value['orden'][2], value['orden'][0]
 
-                    value['acumdist'][1], value['acumdist'][2] = \
-                        value['acumdist'][2], value['acumdist'][1]
+                value['acumdist'][0], value['acumdist'][1], value['acumdist'][2] = \
+                    value['acumdist'][1], value['acumdist'][2], value['acumdist'][0]
 
-                    value['x'][1], value['x'][2] = \
-                        value['x'][2], value['x'][1]
+                value['x'][0], value['x'][1], value['x'][2] = \
+                    value['x'][1], value['x'][2], value['x'][0]
 
-                    value['y'][1], value['y'][2] = \
-                        value['y'][2], value['y'][1]
-                else:
-                    value['orden'][1], value['orden'][2] = \
-                        value['orden'][2], value['orden'][1]
+                value['y'][0], value['y'][1], value['y'][2] = \
+                    value['y'][1], value['y'][2], value['y'][0]
 
-                    value['acumdist'][1], value['acumdist'][2] = \
-                        value['acumdist'][2], value['acumdist'][1]
+                value['seg'][0], value['seg'][1], value['seg'][2] = \
+                    value['seg'][1], value['seg'][2], value['seg'][0]
 
-                    value['x'][1], value['x'][2] = \
-                        value['x'][2], value['x'][1]
+            elif value['acumdist'][1] > value['acumdist'][2] or value['acumdist'][2] > value['acumdist'][1]:
+                value['orden'][1], value['orden'][2] = \
+                    value['orden'][2], value['orden'][1]
 
-                    value['y'][1], value['y'][2] = \
-                        value['y'][2], value['y'][1]
+                value['acumdist'][1], value['acumdist'][2] = \
+                    value['acumdist'][2], value['acumdist'][1]
 
-        else:
-            print("otro caso")
+                value['x'][1], value['x'][2] = \
+                    value['x'][2], value['x'][1]
 
+                value['y'][1], value['y'][2] = \
+                    value['y'][2], value['y'][1]
+
+        elif value['orden'] == [0, 1, 1]:
+            if value['acumdist'][0] > value['acumdist'][1]:
+                value['orden'][0], value['orden'][1] = \
+                    value['orden'][1], value['orden'][0]
+
+                value['acumdist'][0], value['acumdist'][1] = \
+                    value['acumdist'][1], value['acumdist'][0]
+
+                value['x'][0], value['x'][1] = \
+                    value['x'][1], value['x'][0]
+
+                value['y'][0], value['y'][1] = \
+                    value['y'][1], value['y'][0]
+
+            elif value['acumdist'][0] < value['acumdist'][1]:
+                value['orden'][0], value['orden'][1], value['orden'][2] = \
+                    value['orden'][2], value['orden'][0], value['orden'][1]
+
+                value['acumdist'][0], value['acumdist'][1], value['acumdist'][2] = \
+                    value['acumdist'][2], value['acumdist'][0], value['acumdist'][1]
+
+                value['x'][0], value['x'][1], value['x'][2] = \
+                    value['x'][2], value['x'][0], value['x'][1]
+
+                value['y'][0], value['y'][1], value['y'][2] = \
+                    value['y'][2], value['y'][0], value['y'][1]
 
 def preparaMuros(VManzanas, VMuros, mancom):
     vectoresx, vectoresy, distpq, tipovert = ([] for i in range(4))
-    acumdist = [0]
 
     for manzana in VManzanas:
         if manzana['id'] not in mancom:
-            nvect = 1
+            nvect = 0
+            acumdist = [0]
             for key, muro in VMuros.items():
                 if manzana['id'] == key:
                     tmpX = manzana['x'][1:]
@@ -56,12 +82,11 @@ def preparaMuros(VManzanas, VMuros, mancom):
                     sinit = muro['seg'][0]
                     send = muro['seg'][2]
 
-                    distinit = linit - manzana['acumdist'][sinit]
+                    distinit = linit - manzana['acumdist'][sinit+1]
                     insertinit = sinit
 
-                    if distinit < 1:
-                        tipo[sinit] = 'CM'
-
+                    if distinit < 2:
+                        tipo.insert(sinit, 'CM')
                     else:
                         ux = manzana['dX'][sinit]
                         uy = manzana['dY'][sinit]
@@ -73,15 +98,15 @@ def preparaMuros(VManzanas, VMuros, mancom):
 
                         utils.insertListCoor(nuevox, insertinit - 1, tmpX)
                         utils.insertListCoor(nuevoy, insertinit - 1, tmpY)
-                        tipo.insert(sinit + 1, 'CM')
+                        utils.insertListCoor('CM', insertinit, tipo)
                         insertinit = insertinit + 1
 
-                    distend = lend - manzana['acumdist'][send]
+                    distend = lend - manzana['acumdist'][send+1]
                     insertend = send + (insertinit - sinit)
 
-                    if distend < 1:
+                    if distend < 2:
                         if tipo[send] in ('FV', 'CC'):
-                            tipo[send] = 'FM'
+                            tipo[insertend] = 'FM'
                     else:
                         ux = manzana['dX'][send]
                         uy = manzana['dY'][send]
@@ -91,23 +116,22 @@ def preparaMuros(VManzanas, VMuros, mancom):
                         nuevox = px + distend * (ux / normu)
                         nuevoy = py + distend * (uy / normu)
 
-                        utils.insertListCoor(nuevox, insertend - 1, tmpX)
-                        utils.insertListCoor(nuevoy, insertend - 1, tmpY)
+                        utils.insertListCoor(nuevox, insertend, tmpX)
+                        utils.insertListCoor(nuevoy, insertend, tmpY)
 
                         if insertend == insertinit:
-                            tipo.insert(insertend + 1, 'FM')
+                            utils.insertListCoor('FM', insertend+1, tipo)
                         else:
-                            tipo.insert(insertend, 'FM')
+                            utils.insertListCoor('FM', insertend, tipo)
 
                     insertend = insertend + 1
                     tmpX.insert(0, tmpX[-1])
                     tmpY.insert(0, tmpY[-1])
 
-                    tipo[insertinit + 1:insertend - 1] = ['CM'] * (insertend - 1 - insertinit)
+                    tipo[insertinit+1:insertend - 1] = ['CM'] * (insertend - 1 - insertinit)
 
                     manzana['x'] = tmpX
                     manzana['y'] = tmpY
-                    # while count < len(tmpX) - 1:
                     for index, value in enumerate(manzana['x'][:-1]):
                         x = (manzana['x'][index + 1] - manzana['x'][index])
                         y = (manzana['y'][index + 1] - manzana['y'][index])
@@ -123,14 +147,98 @@ def preparaMuros(VManzanas, VMuros, mancom):
                     muro['seg'][0] = insertinit
                     muro['seg'][-1] = insertend
 
+# def preparaMuros(VManzanas, VMuros, mancom):
+#     vectoresx, vectoresy, distpq, tipovert = ([] for i in range(4))
+#
+#     for manzana in VManzanas:
+#         nvect = 0
+#
+#         if manzana['id'] not in mancom:
+#             acumdist = [0]
+#             for key, muro in VMuros.items():
+#                 if manzana['id'] == key:
+#                     tmpX = manzana['x'][1:]
+#                     tmpY = manzana['y'][1:]
+#                     tipo = manzana['tipo']
+#                     linit = muro['acumdist'][0]
+#                     lend = muro['acumdist'][2]
+#                     sinit = muro['seg'][0]
+#                     send = muro['seg'][2]
+#
+#                     distinit = linit - manzana['acumdist'][sinit+1]
+#
+#                     if distinit < 2:
+#                         tipo[sinit] = 'CM'
+#                         insertinit = sinit
+#
+#                     else:
+#                         ux = manzana['dX'][sinit]
+#                         uy = manzana['dY'][sinit]
+#                         normu = manzana['dist'][sinit]
+#                         px = manzana['x'][sinit]
+#                         py = manzana['y'][sinit]
+#                         nuevox = px + distinit * (ux / normu)
+#                         nuevoy = py + distinit * (uy / normu)
+#
+#                         utils.insertListCoor(nuevox, sinit, tmpX)
+#                         utils.insertListCoor(nuevoy, sinit, tmpY)
+#                         utils.insertListCoor('CM', sinit, tipo)
+#                         insertinit = sinit + 1
+#
+#                     distend = lend - manzana['acumdist'][send+1]
+#                     insertend = send + (insertinit - sinit)
+#
+#                     if distend < 2:
+#                         if tipo[insertend] in ('FV', 'CC'):
+#                             tipo[insertend] = 'FM'
+#                     else:
+#                         ux = manzana['dX'][send]
+#                         uy = manzana['dY'][send]
+#                         normu = manzana['dist'][send]
+#                         px = manzana['x'][send]
+#                         py = manzana['y'][send]
+#                         nuevox = px + distend * (ux / normu)
+#                         nuevoy = py + distend * (uy / normu)
+#
+#                         utils.insertListCoor(nuevox, send, tmpX)
+#                         utils.insertListCoor(nuevoy, send, tmpY)
+#                         if insertinit == insertend:
+#                             utils.insertListCoor('FM', send+1, tipo)
+#                         else:
+#                             utils.insertListCoor('FM', send, tipo)
+#
+#                         insertend = insertend + 1
+#
+#                     tmpX.insert(0, tmpX[-1])
+#                     tmpY.insert(0, tmpY[-1])
+#
+#                     tipo[insertinit:insertend - 1] = ['CM'] * (insertend - insertinit - 1)
+#
+#                     manzana['x'] = tmpX
+#                     manzana['y'] = tmpY
+#                     for index, value in enumerate(tipo[:-1]):
+#                         x = (manzana['x'][index + 1] - manzana['x'][index])
+#                         y = (manzana['y'][index + 1] - manzana['y'][index])
+#                         nvect = nvect + 1
+#                         vectoresx.append(x)
+#                         vectoresy.append(y)
+#                         modulo = math.sqrt(x ** 2 + y ** 2)
+#                         distpq.append(modulo)
+#                         acumdist.append(acumdist[-1] + modulo)
+#
+#                     manzana.update(dX=vectoresx, dY=vectoresy, dist=distpq, acumdist=acumdist, nvectores=nvect, tipo=tipo)
+#
+#                     muro['seg'][0] = insertinit
+#                     muro['seg'][-1] = insertend
+
 
 def preparaVacios(VManzanas, VVacios, mancom):
     vectoresx, vectoresy, distpq, tipovert = ([] for i in range(4))
-    acumdist = [0]
 
     for manzana in VManzanas:
-        nvect = 1
+        nvect = 0
         if manzana['id'] not in mancom:
+            acumdist = [0]
             for key, vacio in VVacios.items():
                 if manzana['id'] == key:
                     tmpX = manzana['x'][1:]
@@ -141,11 +249,11 @@ def preparaVacios(VManzanas, VVacios, mancom):
                     sinit = vacio['seg'][0]
                     send = vacio['seg'][2]
 
-                    distinit = linit - manzana['acumdist'][sinit]
-                    insertinit = sinit
+                    distinit = linit - manzana['acumdist'][sinit+1]
 
-                    if distinit < 1:
+                    if distinit < 2:
                         tipo[sinit] = 'CV'
+                        insertinit = sinit
 
                     else:
                         ux = manzana['dX'][sinit]
@@ -156,17 +264,17 @@ def preparaVacios(VManzanas, VVacios, mancom):
                         nuevox = px + distinit * (ux / normu)
                         nuevoy = py + distinit * (uy / normu)
 
-                        utils.insertListCoor(nuevox, insertinit - 1, tmpX)
-                        utils.insertListCoor(nuevoy, insertinit - 1, tmpY)
-                        tipo.insert(sinit + 1, 'CV')
-                        insertinit = insertinit + 1
+                        utils.insertListCoor(nuevox, sinit-1, tmpX)
+                        utils.insertListCoor(nuevoy, sinit-1, tmpY)
+                        utils.insertListCoor('CV', sinit, tipo)
+                        insertinit = sinit + 1
 
-                    distend = lend - manzana['acumdist'][send]
+                    distend = lend - manzana['acumdist'][send+1]
                     insertend = send + (insertinit - sinit)
 
-                    if distend < 1:
-                        if tipo[send] in ('FM', 'CC'):
-                            tipo[send] = 'FV'
+                    if distend < 2:
+                        if tipo[insertend] in ('FM', 'CC'):
+                            tipo[insertend] = 'FV'
                     else:
                         ux = manzana['dX'][send]
                         uy = manzana['dY'][send]
@@ -176,24 +284,22 @@ def preparaVacios(VManzanas, VVacios, mancom):
                         nuevox = px + distend * (ux / normu)
                         nuevoy = py + distend * (uy / normu)
 
-                        utils.insertListCoor(nuevox, insertend - 1, tmpX)
-                        utils.insertListCoor(nuevoy, insertend - 1, tmpY)
-
-                        if insertend == insertinit:
-                            tipo.insert(insertend + 1, 'FV')
+                        utils.insertListCoor(nuevox, send, tmpX)
+                        utils.insertListCoor(nuevoy, send, tmpY)
+                        if insertinit == insertend:
+                            utils.insertListCoor('FV', send+1, tipo)
                         else:
-                            tipo.insert(insertend, 'FV')
+                            utils.insertListCoor('FV', send, tipo)
+                        insertend = insertend + 1
 
-                    insertend = insertend + 1
                     tmpX.insert(0, tmpX[-1])
                     tmpY.insert(0, tmpY[-1])
 
-                    tipo[insertinit + 1:insertend - 1] = ['CV'] * (insertend - 1 - insertinit)
+                    tipo[insertinit:insertend - 1] = ['CV'] * (insertend - insertinit-1)
 
                     manzana['x'] = tmpX
                     manzana['y'] = tmpY
-
-                    for index, value in enumerate(manzana['x'][:-1]):
+                    for index, value in enumerate(tipo[:-1]):
                         x = (manzana['x'][index + 1] - manzana['x'][index])
                         y = (manzana['y'][index + 1] - manzana['y'][index])
                         nvect = nvect + 1
@@ -291,7 +397,6 @@ def rellenaFachadas(VManzanas, mzn):
 
 
 def construirCasas(fachadas, casas, mzn):
-    casas = []
     for index, fachada in enumerate(fachadas[:-1]):
 
         if fachadas[index]['seg'] != fachadas[index -1]['seg']:
@@ -385,13 +490,15 @@ def profundidadMuros(muros, manzanas, mancom):
     listy = []
     listx = []
 
-    for muro in muros:
+    for key, muro in muros.items():
 
         listy.clear()
         listx.clear()
-        if muro['mzn'] not in mancom:
+        if key not in mancom:
             for manzana in manzanas:
-                 if muro['mzn'] == manzana['id']:
+                 if key == manzana['id']:
+                    muro['x'].clear()
+                    muro['y'].clear()
                     for index, tipo in enumerate(manzana['tipo']):
                         if tipo is 'CM':
                             muro['x'].append(manzana['x'][index])
@@ -401,12 +508,12 @@ def profundidadMuros(muros, manzanas, mancom):
                             muro['x'].append(manzana['x'][index])
                             muro['y'].append(manzana['y'][index])
 
-            seg = utils.getSegmentosMuro(manzanas, muro)
+            seg = utils.getSegmentosMuro(manzanas, key)
             for index, element in reversed(list(enumerate(muro['x']))):
 
                 if index == len(muro['x'])-1:
-                    xvector = manzanas[muro['mzn']]['dX'][seg[-1]]
-                    yvector = manzanas[muro['mzn']]['dY'][seg[-1]]
+                    xvector = manzanas[key]['dX'][seg[-1]]
+                    yvector = manzanas[key]['dY'][seg[-1]]
                     perp = [yvector, -xvector]
                     mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
 
@@ -419,8 +526,8 @@ def profundidadMuros(muros, manzanas, mancom):
                     muro['y'].append(yy)
 
                 elif index == 0:
-                    xvector = manzanas[muro['mzn']]['dX'][seg[0]]
-                    yvector = manzanas[muro['mzn']]['dY'][seg[0]]
+                    xvector = manzanas[key]['dX'][seg[0]]
+                    yvector = manzanas[key]['dY'][seg[0]]
                     perp = [yvector, -xvector]
                     mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
 
@@ -433,8 +540,8 @@ def profundidadMuros(muros, manzanas, mancom):
                     muro['y'].append(yy)
 
                 else:
-                    xvector = manzanas[muro['mzn']]['dX'][seg[index-1]]
-                    yvector = manzanas[muro['mzn']]['dY'][seg[index-1]]
+                    xvector = manzanas[key]['dX'][seg[index-1]]
+                    yvector = manzanas[key]['dY'][seg[index-1]]
                     perp = [yvector, -xvector]
                     mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
 
@@ -443,8 +550,8 @@ def profundidadMuros(muros, manzanas, mancom):
                     xx = muro['x'][index - 1] + vx
                     yy = muro['y'][index - 1] + vy
 
-                    xvector2 = manzanas[muro['mzn']]['dX'][seg[index]]
-                    yvector2 = manzanas[muro['mzn']]['dY'][seg[index]]
+                    xvector2 = manzanas[key]['dX'][seg[index]]
+                    yvector2 = manzanas[key]['dY'][seg[index]]
                     perp2 = [yvector2, -xvector2]
                     mod2 = math.sqrt(perp2[1] ** 2 + perp2[0] ** 2)
                     vx2 = np.divide(perp2[0], mod2) * 12
@@ -452,10 +559,10 @@ def profundidadMuros(muros, manzanas, mancom):
                     xx2 = muro['x'][index + 1] + vx2
                     yy2 = muro['y'][index + 1] + vy2
 
-                    dx1 = manzanas[muro['mzn']]['dX'][seg[index-1]]
-                    dy1 = manzanas[muro['mzn']]['dY'][seg[index-1]]
-                    dx2 = manzanas[muro['mzn']]['dX'][seg[index]]
-                    dy2 = manzanas[muro['mzn']]['dY'][seg[index]]
+                    dx1 = manzanas[key]['dX'][seg[index-1]]
+                    dy1 = manzanas[key]['dY'][seg[index-1]]
+                    dx2 = manzanas[key]['dX'][seg[index]]
+                    dy2 = manzanas[key]['dY'][seg[index]]
 
                     puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
 

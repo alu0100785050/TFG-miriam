@@ -4,7 +4,7 @@ import utils
 
 def inicManzanas(shpma, manzanas):
     global nmanzanas
-    nmanzanas  = 0
+    nmanzanas = 0
     for index, coord in enumerate(shpma.shapeRecords()):
         nmanzanas = nmanzanas + 1
         count, nvect = (0, 0)
@@ -36,7 +36,6 @@ def inicManzanas(shpma, manzanas):
 def inicMuros(shpmu, muros, manzanas):
     tipos = []
     coords = []
-    used = []
 
     for obj in shpmu:
         tipos.append(obj.record['tipo'])
@@ -45,16 +44,15 @@ def inicMuros(shpmu, muros, manzanas):
     for man in manzanas:
         for index, x in enumerate(man['x'][:-1], 0):
             for tipo, coord in zip(tipos, coords):
-
                 if coord and man['id'] not in [67, 79]:
+
                     dist = math.sqrt((man['x'][index] - coord[0][0]) ** 2 + (man['y'][index] - coord[0][1]) ** 2)
                     dist2 = math.sqrt(
                         (coord[0][0] - man['x'][index + 1]) ** 2 + (coord[0][1] - man['y'][index + 1]) ** 2)
                     dist3 = math.sqrt(
                         (man['x'][index] - man['x'][index + 1]) ** 2 + (man['y'][index] - man['y'][index + 1]) ** 2)
 
-                    if dist + dist2 - dist3 <= 1 and coord[0] not in used:
-                        used.append(coord[0])
+                    if dist + dist2 - dist3 <= 1:
 
                         if man['id'] == 33:
                             if tipo is None:
@@ -71,26 +69,22 @@ def inicMuros(shpmu, muros, manzanas):
                             muros[man['id']]['acumdist'] = []
                             muros[man['id']]['distsegpunto'] = []
 
+                        muros[man['id']]['seg'].append(index)
+                        muros[man['id']]['x'].append(coord[0][0])
+                        muros[man['id']]['y'].append(coord[0][1])
                         muros[man['id']]['acumdist'].append(part)
                         muros[man['id']]['distsegpunto'].append(dist)
 
                         if tipo == 1:
-                            muros[man['id']]['seg'].append(index)
                             muros[man['id']]['orden'].append(1)
-                            muros[man['id']]['x'].append(coord[0][0])
-                            muros[man['id']]['y'].append(coord[0][1])
 
                         elif tipo == 0:
-                            muros[man['id']]['seg'].append(index)
                             muros[man['id']]['orden'].append(0)
-                            muros[man['id']]['x'].append(coord[0][0])
-                            muros[man['id']]['y'].append(coord[0][1])
 
 
 def inicVacios(shpva, vacios, manzanas):
     tipos = []
     coords = []
-    used = []
 
     for obj in shpva:
         tipos.append(obj.record['tipo'])
@@ -107,8 +101,7 @@ def inicVacios(shpva, vacios, manzanas):
                     dist3 = math.sqrt(
                         (man['x'][index] - man['x'][index + 1]) ** 2 + (man['y'][index] - man['y'][index + 1]) ** 2)
 
-                    if dist + dist2 - dist3 <= 1 and coord[0] not in used:
-                        used.append(coord[0])
+                    if dist + dist2 - dist3 <= 1:
 
                         part = man['acumdist'][index] + dist
 
@@ -121,17 +114,14 @@ def inicVacios(shpva, vacios, manzanas):
                             vacios[man['id']]['acumdist'] = []
                             vacios[man['id']]['distsegpunto'] = []
 
+                        vacios[man['id']]['x'].append(coord[0][0])
+                        vacios[man['id']]['y'].append(coord[0][1])
+                        vacios[man['id']]['seg'].append(index)
                         vacios[man['id']]['acumdist'].append(part)
                         vacios[man['id']]['distsegpunto'].append(dist)
 
                         if tipo == 1:
-                            vacios[man['id']]['seg'].append(index)
                             vacios[man['id']]['orden'].append(1)
-                            vacios[man['id']]['x'].append(coord[0][0])
-                            vacios[man['id']]['y'].append(coord[0][1])
 
                         elif tipo == 0:
-                            vacios[man['id']]['seg'].append(index)
                             vacios[man['id']]['orden'].append(0)
-                            vacios[man['id']]['x'].append(coord[0][0])
-                            vacios[man['id']]['y'].append(coord[0][1])
