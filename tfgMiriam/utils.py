@@ -17,7 +17,9 @@ amax = 28.3898 + 2 * 4.9329
 
 def insertListCoor(value, pos, lis):
     if pos == len(lis) - 1:
-        lis.append(value)
+        lis.insert(pos, value)
+    elif pos == len(lis):
+        lis[pos-1] = value
     else:
         lis.insert(pos + 1, value)
 
@@ -255,41 +257,50 @@ def elementosIguales(elementos):
     return all(x == elementos[0] for x in elementos)
 
 
-def listarDuplicados(seq):
+def listarDuplicados(x, acumdist, distsegpunto, manzanas, manzana):
     tally = defaultdict(list)
-    for num, item in enumerate(seq):
-        for num2, item2 in enumerate(seq[num+1:], num+1):
-            if abs(item - item2) <= 2:
-                tally[int(item)].append(num)
-                tally[int(item)].append(num2)
+    for num, item in enumerate(x):
+        for num2, item2 in enumerate(x[num+1:], num+1):
+            if item == item2:
+                if abs(int(acumdist[num]) - int(acumdist[num2])) <= 2 or abs(int(acumdist[num]) - int(acumdist[num2])) == int(manzanas[manzana]['acumdist'][-1]):
+                    tally[int(item)].append(num)
+                    tally[int(item)].append(num2)
+                if distsegpunto[num] > 2 and distsegpunto[num] > distsegpunto[num2]:
+                    tally[int(item)].append(num)
+                    tally[int(item)].append(num2)
+
     return tally
 
 
-def eliminarPuntosDuplicados(estructura):
+def eliminarPuntosDuplicados(estructura, manzanas):
     runned = []
 
     for key, item in estructura.items():
-        dup = listarDuplicados(item['acumdist'])
-        incremento = 0
+        dup = listarDuplicados(item['x'], item['acumdist'], item['distsegpunto'], manzanas, key)
         runned.append(key)
 
         for key, pos in dup.items():
             if len(pos) >= 2:
-                if int(item['distsegpunto'][pos[0]-incremento]) > 2 and int(item['distsegpunto'][pos[1]-incremento]) < 2:
-                    item['acumdist'].pop(pos[0]-incremento)
-                    item['x'].pop(pos[0]-incremento)
-                    item['y'].pop(pos[0]-incremento)
-                    item['distsegpunto'].pop(pos[0]-incremento)
-                    item['seg'].pop(pos[0]-incremento)
-                    item['orden'].pop(pos[0]-incremento)
+                if int(item['distsegpunto'][pos[0]]) > int(item['distsegpunto'][pos[1]]) and int(item['distsegpunto'][pos[0]]) > 2:
+                    item['acumdist'][pos[0]] = None
+                    item['x'][pos[0]] = None
+                    item['y'][pos[0]] = None
+                    item['distsegpunto'][pos[0]] = None
+                    item['seg'][pos[0]] = None
+                    item['orden'][pos[0]] = None
                 else:
-                    item['acumdist'].pop(pos[1]-incremento)
-                    item['x'].pop(pos[1]-incremento)
-                    item['y'].pop(pos[1]-incremento)
-                    item['distsegpunto'].pop(pos[1]-incremento)
-                    item['seg'].pop(pos[1]-incremento)
-                    item['orden'].pop(pos[1]-incremento)
+                    item['acumdist'][pos[1]] = None
+                    item['x'][pos[1]] = None
+                    item['y'][pos[1]] = None
+                    item['distsegpunto'][pos[1]] = None
+                    item['seg'][pos[1]] = None
+                    item['orden'][pos[1]] = None
 
-                incremento = incremento + 1
+        item['acumdist'] = list(filter(None.__ne__, item['acumdist']))
+        item['x'] = list(filter(None.__ne__, item['x']))
+        item['y'] = list(filter(None.__ne__, item['y']))
+        item['seg'] = list(filter(None.__ne__, item['seg']))
+        item['orden'] = list(filter(None.__ne__, item['orden']))
+        item['distsegpunto'] = list(filter(None.__ne__, item['distsegpunto']))
 
     return estructura
