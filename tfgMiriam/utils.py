@@ -15,15 +15,6 @@ amin = 28.3898 - 2 * 4.9329
 amax = 28.3898 + 2 * 4.9329
 
 
-def insertListCoor(value, pos, lis):
-    if pos == len(lis) - 1:
-        lis.insert(pos, value)
-    elif pos == len(lis):
-        lis[pos-1] = value
-    else:
-        lis.insert(pos + 1, value)
-
-
 def getMinMax(list):
     max = 0
     min = 10000

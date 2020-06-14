@@ -30,22 +30,17 @@ mantot, mansen, mancom = utils.descartarManzanasVariasEstructuras(VManzanas, VMu
 VMuros = utils.eliminarPuntosDuplicados(VMuros, VManzanas)
 VVacios = utils.eliminarPuntosDuplicados(VVacios, VManzanas)
 
-build.reordenarEstructuras(VMuros, VManzanas)
-build.reordenarEstructuras(VVacios, VManzanas)
+build.reordenarEstructuras(VMuros)
+build.reordenarEstructuras(VVacios)
 
 for manzana in VManzanas:
-    build.preparaMuros(VManzanas, VMuros, mancom, manzana)
+    build.preparaMuros(VManzanas, VMuros, manzana)
+    build.preparaVacios(VManzanas, VVacios, manzana)
 
-build.rellenaFachadas(VManzanas, VManzanas[23])
-build.construirCasas(VManzanas[23]['fachadas'], VManzanas[23]['casas'], VManzanas[23])
-
-# build.preparaVacios(VManzanas, VVacios, mancom
-
-# # # # # Paso 2 - Rellenar con fachadas
-# for manzana in VManzanas:
-#     if manzana['id'] not in mancom:
-#         build.rellenaFachadas(VManzanas, manzana)
-#         build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
+# Paso 2 - Rellenar con fachadas
+for manzana in VManzanas:
+    build.rellenaFachadas(VManzanas, manzana)
+    build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
 
 for manzana in VManzanas:
     for key, muro in VMuros.items():
@@ -62,8 +57,27 @@ for manzana in VManzanas:
             print("MUROOOOOOO------AQUIIIIIII--------")
             print(muro['x'])
             print(muro['y'])
+            print(muro['orden'])
             print(muro['acumdist'])
             print(muro['seg'])
+
+    for key, vacio in VVacios.items():
+        if manzana['id'] == key:
+            print("MANZANAAAAAAAA---------AQUIIIIIIIII------")
+            print(manzana['id'])
+            print(manzana['x'])
+            print(manzana['y'])
+            print(manzana['tipo'])
+            print('DISTANCIA ACUMULADA ' + str(manzana['acumdist']))
+            print('NUMERO DE VECTORES ' + str(manzana['nvectores']))
+            print('VECTORES X ' + str(manzana['dX']))
+            print('VECTORES Y ' + str(manzana['dY']))
+            print("VACIOOOOOOOO------AQUIIIIIII--------")
+            print(vacio['x'])
+            print(vacio['y'])
+            print(vacio['orden'])
+            print(vacio['acumdist'])
+            print(vacio['seg'])
 
 
 
@@ -97,7 +111,7 @@ for manzana in VManzanas:
         xx, yy = ([] for i in range(2))
         xx, yy = casa['poligono'].exterior.xy
         p.plot(xx, yy)
-#
+
 p.show()
 
 # Manzana 67 y 79 eliminadas
