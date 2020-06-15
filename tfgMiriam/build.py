@@ -80,9 +80,17 @@ def preparaMuros(VManzanas, VMuros, manzana):
                 nuevox = px + distend * (ux / normu)
                 nuevoy = py + distend * (uy / normu)
 
-                tmpX.insert(insertend, nuevox)
-                tmpY.insert(insertend, nuevoy)
-                tipovert.insert(insertend+1, 'FM')
+                if VSeg[0] == VSeg[2]:
+                    tmpX.insert(insertend-1, nuevox)
+                    tmpY.insert(insertend-1, nuevoy)
+                else:
+                    tmpX.insert(insertend, nuevox)
+                    tmpY.insert(insertend, nuevoy)
+
+                if VSeg[0] == VSeg[2]:
+                    tipovert.insert(insertend, 'FM')
+                else:
+                    tipovert.insert(insertend+1, 'FM')
 
                 insertend = insertend + 1
 
@@ -96,7 +104,7 @@ def preparaMuros(VManzanas, VMuros, manzana):
 
             if insertend < insertinit:
                 tipovert[0:insertend] = ['CM'] * (insertend)
-                tipovert[insertinit+1:-1] = ['CM'] * (len(tipovert) - insertinit)
+                tipovert[insertinit+1:] = ['CM'] * (len(tipovert)-1 - insertinit)
             else:
                 tipovert[insertinit:insertend] = ['CM'] * (insertend - insertinit)
 
@@ -182,7 +190,7 @@ def preparaVacios(VManzanas, VVacios, manzana):
 
             if insertend < insertinit:
                 tipovert[0:insertend] = ['CV'] * (insertend)
-                tipovert[insertinit:-1] = ['CV'] * (len(tipovert) - 1 - insertinit)
+                tipovert[insertinit+1:] = ['CV'] * (len(tipovert) - 1 - insertinit)
             else:
                 tipovert[insertinit:insertend] = ['CV'] * (insertend - insertinit)
 
@@ -377,31 +385,36 @@ def construirCasas(fachadas, casas, mzn):
     mzn['casas'] = casas
 
 
-def profundidadMuros(muros, manzanas, mancom):
+def profundidadMuros(muros, manzanas):
     listy = []
     listx = []
 
     for key, muro in muros.items():
-
         listy.clear()
         listx.clear()
-        if key not in mancom:
-            for manzana in manzanas:
-                 if key == manzana['id']:
-                    muro['x'].clear()
-                    muro['y'].clear()
-                    for index, tipo in enumerate(manzana['tipo']):
-                        if tipo is 'CM':
-                            muro['x'].append(manzana['x'][index])
-                            muro['y'].append(manzana['y'][index])
 
-                        if tipo is 'FM' and manzana['tipo'][index-1] is 'CM':
-                            muro['x'].append(manzana['x'][index])
-                            muro['y'].append(manzana['y'][index])
+        for manzana in manzanas:
+             if key == manzana['id']:
+                muro['x'].clear()
+                muro['y'].clear()
 
+                if muro['seg'][0] > muro['seg'][2]:
+                    for index in range(muro['seg'][0]+1, len(manzana['tipo'])):
+                        muro['x'].append(manzana['x'][index])
+                        muro['y'].append(manzana['y'][index])
+                    for index in range(0, muro['seg'][2]+1):
+                        muro['x'].append(manzana['x'][index])
+                        muro['y'].append(manzana['y'][index])
+                else:
+                    for index in range(muro['seg'][0], muro['seg'][2]+1):
+                        muro['x'].append(manzana['x'][index])
+                        muro['y'].append(manzana['y'][index])
+
+        if key not in [67, 78, 79]:
             seg = utils.getSegmentosMuro(manzanas, key)
-            for index, element in reversed(list(enumerate(muro['x']))):
+            print(key, seg)
 
+            for index, element in reversed(list(enumerate(muro['x']))):
                 if index == len(muro['x'])-1:
                     xvector = manzanas[key]['dX'][seg[-1]]
                     yvector = manzanas[key]['dY'][seg[-1]]

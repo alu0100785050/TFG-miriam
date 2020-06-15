@@ -153,8 +153,8 @@ def generateOBJmuros(muros, manoaptas):
     ncube = 0
     vertotales = 0
 
-    for muro in muros:
-        if muro['mzn'] not in manoaptas:
+    for key, muro in muros.items():
+        if key not in [67, 78, 79]:
             numvert = 0
             f.write('o Cube' + str(ncube) + '\n')
             ncube = ncube + 1

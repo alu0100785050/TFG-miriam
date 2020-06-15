@@ -93,8 +93,8 @@ def inicVacios(shpva, vacios, manzanas):
     for man in manzanas:
         for index, x in enumerate(man['x'][:-1], 0):
             for tipo, coord in zip(tipos, coords):
-
                 if coord and man['id'] not in [67, 78, 79]:
+
                     dist = math.sqrt((man['x'][index] - coord[0][0]) ** 2 + (man['y'][index] - coord[0][1]) ** 2)
                     dist2 = math.sqrt(
                         (coord[0][0] - man['x'][index + 1]) ** 2 + (coord[0][1] - man['y'][index + 1]) ** 2)

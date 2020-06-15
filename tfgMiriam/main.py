@@ -39,21 +39,34 @@ for manzana in VManzanas:
 
 # Paso 2 - Rellenar con fachadas
 for manzana in VManzanas:
-    build.rellenaFachadas(VManzanas, manzana)
-    build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
+    if manzana['id'] not in [67, 78, 79]:
+        build.rellenaFachadas(VManzanas, manzana)
+        build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
+
+# for manzana in VManzanas:
+#     for key, muro in VMuros.items():
+#         if manzana['id'] == key:
+#             print("MANZANAAAAAAAA---------AQUIIIIIIIII------")
+#             print(manzana['id'])
+#             print(manzana['x'])
+#             print(manzana['y'])
+#             print(manzana['tipo'])
+#             print('DISTANCIA ACUMULADA ' + str(manzana['acumdist']))
+#             print('NUMERO DE VECTORES ' + str(manzana['nvectores']))
+#             print('VECTORES X ' + str(manzana['dX']))
+#             print('VECTORES Y ' + str(manzana['dY']))
+#             print("MUROOOOOOO------AQUIIIIIII--------")
+#             print(muro['x'])
+#             print(muro['y'])
+#             print(muro['orden'])
+#             print(muro['acumdist'])
+#             print(muro['seg'])
+
+build.profundidadMuros(VMuros, VManzanas)
 
 for manzana in VManzanas:
     for key, muro in VMuros.items():
         if manzana['id'] == key:
-            print("MANZANAAAAAAAA---------AQUIIIIIIIII------")
-            print(manzana['id'])
-            print(manzana['x'])
-            print(manzana['y'])
-            print(manzana['tipo'])
-            print('DISTANCIA ACUMULADA ' + str(manzana['acumdist']))
-            print('NUMERO DE VECTORES ' + str(manzana['nvectores']))
-            print('VECTORES X ' + str(manzana['dX']))
-            print('VECTORES Y ' + str(manzana['dY']))
             print("MUROOOOOOO------AQUIIIIIII--------")
             print(muro['x'])
             print(muro['y'])
@@ -61,59 +74,20 @@ for manzana in VManzanas:
             print(muro['acumdist'])
             print(muro['seg'])
 
-    for key, vacio in VVacios.items():
-        if manzana['id'] == key:
-            print("MANZANAAAAAAAA---------AQUIIIIIIIII------")
-            print(manzana['id'])
-            print(manzana['x'])
-            print(manzana['y'])
-            print(manzana['tipo'])
-            print('DISTANCIA ACUMULADA ' + str(manzana['acumdist']))
-            print('NUMERO DE VECTORES ' + str(manzana['nvectores']))
-            print('VECTORES X ' + str(manzana['dX']))
-            print('VECTORES Y ' + str(manzana['dY']))
-            print("VACIOOOOOOOO------AQUIIIIIII--------")
-            print(vacio['x'])
-            print(vacio['y'])
-            print(vacio['orden'])
-            print(vacio['acumdist'])
-            print(vacio['seg'])
-
-
-
-
-# build.profundidadMuros(VMuros, VManzanas, mancom)
 # utils.extraerInformacionPNG('../alturascasas/mdttorrianicorrected.png', VManzanas)
-
 # utils.generateOBJmanzanas(VManzanas)
 # utils.generateOBJmuros(VMuros, mancom)
 
-# xx, yy = ([] for i in range(2))
-# for fachada in VManzanas[21]['fachadas']:
-#     print(fachada)
+# for manzana in VManzanas:
+#     x, y = ([] for i in range(2))
+#     x = [x for x in manzana['x']]
+#     y = [y for y in manzana['y']]
+#     p.plot(x, y)
+#     for casa in manzana['casas']:
+#         xx, yy = ([] for i in range(2))
+#         xx, yy = casa['poligono'].exterior.xy
+#         p.plot(xx, yy)
 #
-#     xx.append(fachada['x'])
-#     yy.append(fachada['y'])
-# p.plot(xx, yy)
-#
-# for casa in VManzanas[21]['casas']:
-#     print(casa)
-#     xx, yy = ([] for i in range(2))
-#     xx, yy = casa['poligono'].exterior.xy
-#     p.plot(xx, yy)
-#
-for manzana in VManzanas:
-    x, y = ([] for i in range(2))
-    x = [x for x in manzana['x']]
-    y = [y for y in manzana['y']]
-    p.plot(x, y)
-    for casa in manzana['casas']:
-        xx, yy = ([] for i in range(2))
-        xx, yy = casa['poligono'].exterior.xy
-        p.plot(xx, yy)
-
-p.show()
-
-# Manzana 67 y 79 eliminadas
+# p.show()
 
 
