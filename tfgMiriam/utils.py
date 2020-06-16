@@ -75,13 +75,24 @@ def intersect(x0a, y0a, dxa, dya, x0b, y0b, dxb, dyb):
     return [x0a + dxa * t, y0a + dya * t]
 
 
-def getSegmentosMuro(manzanas, muro):
+def getSegmentosMuro(manzanas, key, muro):
     listasegm = []
 
     for manzana in manzanas:
-        if manzana['id'] == muro:
-            for index, tipo in enumerate(manzana['tipo']):
-                if tipo is "CM":
+        if manzana['id'] == key:
+            if muro['seg'][-1] < muro['seg'][0]:
+                if muro['seg'][1] != muro['seg'][0]:
+                    for index in range(muro['seg'][0], len(manzana['tipo'])):
+                        listasegm.append(index)
+                    for index in range(0, muro['seg'][-1]):
+                        listasegm.append(index)
+                else:
+                    for index in range(muro['seg'][0]+1, len(manzana['tipo'])):
+                        listasegm.append(index)
+                    for index in range(0, muro['seg'][-1]):
+                        listasegm.append(index)
+            else:
+                for index in range(muro['seg'][0], muro['seg'][-1]):
                     listasegm.append(index)
 
     return listasegm

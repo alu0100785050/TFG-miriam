@@ -67,7 +67,7 @@ build.profundidadMuros(VMuros, VManzanas)
 for manzana in VManzanas:
     for key, muro in VMuros.items():
         if manzana['id'] == key:
-            print("MUROOOOOOO------AQUIIIIIII--------")
+            print("MUROOOOOOO {} ------AQUIIIIIII--------".format(key))
             print(muro['x'])
             print(muro['y'])
             print(muro['orden'])
