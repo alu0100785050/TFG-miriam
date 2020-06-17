@@ -409,7 +409,7 @@ def profundidadMuros(muros, manzanas):
                 muro['y'].append(manzana['y'][seg[-1]+1])
 
         if key not in [67, 78, 79]:
-            for i, index in enumerate(seg):
+            for i, index in reversed(list(enumerate(seg))):
                 xvector = manzanas[key]['dX'][index]
                 yvector = manzanas[key]['dY'][index]
                 perp = [yvector, -xvector]
@@ -419,41 +419,70 @@ def profundidadMuros(muros, manzanas):
                 vy = np.divide(perp[1], mod) * 12
 
                 if index == seg[0]:
-                    xx = muro['x'][i] + vx
-                    yy = muro['y'][i] + vy
+                    xx = muro['x'][0] + vx
+                    yy = muro['y'][0] + vy
                     muro['x'].append(xx)
                     muro['y'].append(yy)
 
                 elif index == seg[-1]:
-                    xx = muro['x'][i] + vx
-                    yy = muro['y'][i] + vy
+                    xx = muro['x'][-1] + vx
+                    yy = muro['y'][-1] + vy
                     muro['x'].append(xx)
                     muro['y'].append(yy)
 
-                else:
-                    xvector = manzanas[key]['dX'][index-1]
-                    yvector = manzanas[key]['dY'][index-1]
+                    xvector = manzanas[key]['dX'][seg[-1]]
+                    yvector = manzanas[key]['dY'][seg[-1]]
                     perp = [yvector, -xvector]
                     mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
 
                     vx = np.divide(perp[0], mod) * 12
                     vy = np.divide(perp[1], mod) * 12
-                    xx = muro['x'][i-1] + vx
-                    yy = muro['y'][i-1] + vy
+                    xx = muro['x'][i + 1] + vx
+                    yy = muro['y'][i + 1] + vy
 
-                    xvector2 = manzanas[key]['dX'][index]
-                    yvector2 = manzanas[key]['dY'][index]
+                    xvector2 = manzanas[key]['dX'][seg[i - 1]]
+                    yvector2 = manzanas[key]['dY'][seg[i - 1]]
                     perp2 = [yvector2, -xvector2]
                     mod2 = math.sqrt(perp2[1] ** 2 + perp2[0] ** 2)
                     vx2 = np.divide(perp2[0], mod2) * 12
                     vy2 = np.divide(perp2[1], mod2) * 12
-                    xx2 = muro['x'][i+1] + vx2
-                    yy2 = muro['y'][i+1] + vy2
+                    xx2 = muro['x'][i - 1] + vx2
+                    yy2 = muro['y'][i - 1] + vy2
 
-                    dx1 = manzanas[key]['dX'][index-1]
-                    dy1 = manzanas[key]['dY'][index-1]
-                    dx2 = manzanas[key]['dX'][index]
-                    dy2 = manzanas[key]['dY'][index]
+                    dx1 = manzanas[key]['dX'][seg[i]]
+                    dy1 = manzanas[key]['dY'][seg[i]]
+                    dx2 = manzanas[key]['dX'][seg[i - 1]]
+                    dy2 = manzanas[key]['dY'][seg[i - 1]]
+
+                    puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
+
+                    muro['x'].append(puntoesquina[0])
+                    muro['y'].append(puntoesquina[1])
+
+                else:
+                    xvector = manzanas[key]['dX'][seg[i]]
+                    yvector = manzanas[key]['dY'][seg[i]]
+                    perp = [yvector, -xvector]
+                    mod = math.sqrt(perp[1] ** 2 + perp[0] ** 2)
+
+                    vx = np.divide(perp[0], mod) * 12
+                    vy = np.divide(perp[1], mod) * 12
+                    xx = muro['x'][i+1] + vx
+                    yy = muro['y'][i+1] + vy
+
+                    xvector2 = manzanas[key]['dX'][seg[i-1]]
+                    yvector2 = manzanas[key]['dY'][seg[i-1]]
+                    perp2 = [yvector2, -xvector2]
+                    mod2 = math.sqrt(perp2[1] ** 2 + perp2[0] ** 2)
+                    vx2 = np.divide(perp2[0], mod2) * 12
+                    vy2 = np.divide(perp2[1], mod2) * 12
+                    xx2 = muro['x'][i-1] + vx2
+                    yy2 = muro['y'][i-1] + vy2
+
+                    dx1 = manzanas[key]['dX'][seg[i]]
+                    dy1 = manzanas[key]['dY'][seg[i]]
+                    dx2 = manzanas[key]['dX'][seg[i-1]]
+                    dy2 = manzanas[key]['dY'][seg[i-1]]
 
                     puntoesquina = utils.intersect(xx, yy, dx1, dy1, xx2, yy2, dx2, dy2)
 

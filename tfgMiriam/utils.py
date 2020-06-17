@@ -173,16 +173,16 @@ def generateOBJmuros(muros, manoaptas):
             for x, y in zip(muro['x'], muro['y']):
                 numvert = numvert + 1
                 f.write('v' + str(' '))
-                f.write(str(x) + str(' '))
-                f.write(str(y) + str(' '))
+                f.write(str(x / 2.2119) + str(' '))
+                f.write(str(y / 2.2119) + str(' '))
                 f.write(str('0'))
                 f.write('\n')
                 vertotales = vertotales + 1
 
             for x, y in zip(muro['x'], muro['y']):
                 f.write('v' + str(' '))
-                f.write(str(x) + str(' '))
-                f.write(str(y) + str(' '))
+                f.write(str(x / 2.2119) + str(' '))
+                f.write(str(y / 2.2119) + str(' '))
                 f.write(str(15))
                 f.write('\n')
                 vertotales = vertotales + 1

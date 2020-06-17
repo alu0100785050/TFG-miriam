@@ -74,9 +74,9 @@ for manzana in VManzanas:
             print(muro['acumdist'])
             print(muro['seg'])
 
-# utils.extraerInformacionPNG('../alturascasas/mdttorrianicorrected.png', VManzanas)
-# utils.generateOBJmanzanas(VManzanas)
-# utils.generateOBJmuros(VMuros, mancom)
+utils.extraerInformacionPNG('../alturascasas/mdttorrianicorrected.png', VManzanas)
+utils.generateOBJmanzanas(VManzanas)
+utils.generateOBJmuros(VMuros, mancom)
 
 # for manzana in VManzanas:
 #     x, y = ([] for i in range(2))
