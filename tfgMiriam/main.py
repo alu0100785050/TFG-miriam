@@ -1,10 +1,7 @@
-from matplotlib import pyplot as p
 import copy
 import initialize
 import build
 import utils
-import pprint
-import math
 import shapefile
 
 shpma = shapefile.Reader("../shapefilestotal/manzana.shp")
@@ -43,38 +40,10 @@ for manzana in VManzanas:
         build.rellenaFachadas(VManzanas, manzana)
         build.construirCasas(manzana['fachadas'], manzana['casas'], manzana)
 
-# for manzana in VManzanas:
-#     for key, muro in VMuros.items():
-#         if manzana['id'] == key:
-#             print("MANZANAAAAAAAA---------AQUIIIIIIIII------")
-#             print(manzana['id'])
-#             print(manzana['x'])
-#             print(manzana['y'])
-#             print(manzana['tipo'])
-#             print('DISTANCIA ACUMULADA ' + str(manzana['acumdist']))
-#             print('NUMERO DE VECTORES ' + str(manzana['nvectores']))
-#             print('VECTORES X ' + str(manzana['dX']))
-#             print('VECTORES Y ' + str(manzana['dY']))
-#             print("MUROOOOOOO------AQUIIIIIII--------")
-#             print(muro['x'])
-#             print(muro['y'])
-#             print(muro['orden'])
-#             print(muro['acumdist'])
-#             print(muro['seg'])
-
 build.profundidadMuros(VMuros, VManzanas)
 
-for manzana in VManzanas:
-    for key, muro in VMuros.items():
-        if manzana['id'] == key:
-            print("MUROOOOOOO {} ------AQUIIIIIII--------".format(key))
-            print(muro['x'])
-            print(muro['y'])
-            print(muro['orden'])
-            print(muro['acumdist'])
-            print(muro['seg'])
-
-utils.extraerInformacionPNG('../alturascasas/mdttorrianicorrected.png', VManzanas)
+utils.extraerInformacionPNGmanzanas('../alturascasas/mdttorrianicorrected.png', VManzanas)
+utils.extraerInformacionPNGmuros('../alturascasas/mdttorrianicorrected.png', VMuros)
 utils.generateOBJmanzanas(VManzanas)
 utils.generateOBJmuros(VMuros, mancom)
 
@@ -90,4 +59,36 @@ utils.generateOBJmuros(VMuros, mancom)
 #
 # p.show()
 
+##CALCULO CASAS##
+#NO GENERADAS
+casasnogeneradas = 0
+for manzana in VManzanas:
+    for fachada in manzana['fachadas']:
+        if fachada['long'] < utils.lmin:
+            casasnogeneradas = casasnogeneradas + 1
 
+print('casas no generadas ' + str(casasnogeneradas))
+
+# MAL GENERADAS
+casasmalgeneradas = 0
+casasmalgeneradasextra = 0
+for manzana in VManzanas:
+
+    casasmal = utils.getCasasMalGeneradas(manzana)
+    casasmalgeneradas = casasmalgeneradas + casasmal
+
+    if manzana['id'] in [67, 78, 79]:
+        for casa in manzana['casas']:
+            casasmalgeneradasextra = casasmalgeneradasextra + 1
+
+print('casas mal generadas ' + str(casasmalgeneradas) + ' de las cuales 67 78 y 79 suman ' + str(casasmalgeneradasextra))
+
+# #BIEN GENERADAS
+casasgeneradas = 0
+for manzana in VManzanas:
+    for casa in manzana['casas']:
+        casasgeneradas = casasgeneradas + 1
+
+casasbiengeneradas = casasgeneradas - (casasmalgeneradas + casasmalgeneradasextra)
+print('casas generadas totales ' + str(casasgeneradas))
+print('casas bien generadas' + str(casasbiengeneradas))

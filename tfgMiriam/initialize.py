@@ -54,6 +54,7 @@ def inicMuros(shpmu, muros, manzanas):
 
                     if dist + dist2 - dist3 <= 1:
 
+                        #Fallo en el shapefile, arreglo
                         if man['id'] == 33:
                             if tipo is None:
                                 tipo = 1

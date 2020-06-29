@@ -1,7 +1,6 @@
-import math
-
 from matplotlib import pyplot as p
 import imageio
+from shapely import geometry
 from shapely.ops import cascaded_union
 import statistics
 from collections import defaultdict
@@ -170,20 +169,20 @@ def generateOBJmuros(muros, manoaptas):
             f.write('o Cube' + str(ncube) + '\n')
             ncube = ncube + 1
 
-            for x, y in zip(muro['x'], muro['y']):
+            for index, (x, y) in enumerate(zip(muro['x'], muro['y'])):
                 numvert = numvert + 1
                 f.write('v' + str(' '))
                 f.write(str(x / 2.2119) + str(' '))
                 f.write(str(y / 2.2119) + str(' '))
-                f.write(str('0'))
+                f.write(str(muro['alturaterreno'][index+1]/2))
                 f.write('\n')
                 vertotales = vertotales + 1
 
-            for x, y in zip(muro['x'], muro['y']):
+            for index, (x, y) in enumerate(zip(muro['x'], muro['y'])):
                 f.write('v' + str(' '))
                 f.write(str(x / 2.2119) + str(' '))
                 f.write(str(y / 2.2119) + str(' '))
-                f.write(str(15))
+                f.write(str(15 + muro['alturaterreno'][index+1]/2))
                 f.write('\n')
                 vertotales = vertotales + 1
 
@@ -238,7 +237,7 @@ def descartarManzanasVariasEstructuras(manzanas, muros, vacios):
     return manzanasTotal, manzanasSencillas, manzanasComplejas
 
 
-def extraerInformacionPNG(imagen, manzanas):
+def extraerInformacionPNGmanzanas(imagen, manzanas):
     zs = []
     alturas = imageio.imread(imagen)
 
@@ -253,6 +252,23 @@ def extraerInformacionPNG(imagen, manzanas):
 
             zmean = statistics.mean(zs)
             casa['alturaterreno'] = zmean / 2
+
+
+def extraerInformacionPNGmuros(imagen, muros):
+    zs = []
+    alturas = imageio.imread(imagen)
+
+    for key, muro in muros.items():
+        muro['alturaterreno'] = []
+        xx, yy = muro['poligono'].exterior.xy
+        zs.clear()
+
+        for x, y in zip(xx, yy):
+            z = alturas[round(-y) + 1, round(x) + 1]
+            zs.append(z)
+
+            zmean = statistics.mean(zs)
+            muro['alturaterreno'].append(zmean / 2)
 
 
 def elementosIguales(elementos):
@@ -306,3 +322,15 @@ def eliminarPuntosDuplicados(estructura, manzanas):
         item['distsegpunto'] = list(filter(None.__ne__, item['distsegpunto']))
 
     return estructura
+
+def getCasasMalGeneradas(manzana):
+    casasmalgeneradas = 0
+
+    for cas in manzana['casas']:
+        for casa in manzana['casas']:
+            if casa['poligono'].intersects(cas['poligono']) and not casa['poligono'].equals(cas['poligono']):
+                a = (casa['poligono'].intersection(cas['poligono']).area / casa['poligono'].area) * 100
+                if a > 5:
+                    casasmalgeneradas = casasmalgeneradas + 1
+
+    return casasmalgeneradas
